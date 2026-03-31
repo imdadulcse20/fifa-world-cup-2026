@@ -14,6 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        \App\Models\User::create([
+            'name' => 'Admin',
+            'email' => 'admin@fwc2026.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+        ]);
+
+        $this->call(WorldCupSeeder::class);
     }
 }

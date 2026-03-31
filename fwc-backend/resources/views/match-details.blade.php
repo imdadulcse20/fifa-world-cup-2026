@@ -22,8 +22,15 @@
 
         <div class="grid grid-cols-3 items-center">
             <div class="flex flex-col items-center space-y-4">
-                <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="">
-                <span class="text-xl md:text-3xl font-black text-center">{{ $match->homeTeam->name }}</span>
+                @if($match->homeTeam)
+                    <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="">
+                    <span class="text-xl md:text-3xl font-black text-center">{{ $match->homeTeam->name }}</span>
+                @else
+                    <div class="w-24 h-16 md:w-32 md:h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 mb-4 shadow-2xl">
+                        <i data-lucide="users" class="w-12 h-12"></i>
+                    </div>
+                    <span class="text-lg md:text-xl font-black text-center text-slate-500 uppercase">{{ $match->home_team_placeholder }}</span>
+                @endif
             </div>
 
             <div class="flex flex-col items-center">
@@ -36,8 +43,15 @@
             </div>
 
             <div class="flex flex-col items-center space-y-4">
-                <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="">
-                <span class="text-xl md:text-3xl font-black text-center">{{ $match->awayTeam->name }}</span>
+                @if($match->awayTeam)
+                    <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="">
+                    <span class="text-xl md:text-3xl font-black text-center">{{ $match->awayTeam->name }}</span>
+                @else
+                    <div class="w-24 h-16 md:w-32 md:h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 mb-4 shadow-2xl">
+                        <i data-lucide="users" class="w-12 h-12"></i>
+                    </div>
+                    <span class="text-lg md:text-xl font-black text-center text-slate-500 uppercase">{{ $match->away_team_placeholder }}</span>
+                @endif
             </div>
         </div>
 

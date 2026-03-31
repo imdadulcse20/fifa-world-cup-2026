@@ -135,35 +135,100 @@ class WorldCupSeeder extends Seeder
         foreach ($groupList as $groupName => $groupTeams) {
             $pairings = [[0,1], [2,3], [0,2], [1,3], [0,3], [1,2]];
             foreach ($pairings as $pair) {
-                $this->createMatch($groupTeams[$pair[0]], $groupTeams[$pair[1]], $stadiums[rand(0, 15)], 'Group Stage', $groupName, $matchDate->copy()->addHours(rand(0, 200)), 'upcoming');
+                $this->createMatch($groupTeams[$pair[0]]->id, $groupTeams[$pair[1]]->id, $stadiums[rand(0, 15)], 'Group Stage', $groupName, $matchDate->copy()->addHours(rand(0, 200)), 'upcoming');
             }
         }
 
         // 4. Knockout Stage
-        $knockoutStages = [
-            ['Round of 32', 16, '2026-06-28'],
-            ['Round of 16', 8, '2026-07-04'],
-            ['Quarter-finals', 4, '2026-07-09'],
-            ['Semi-finals', 2, '2026-07-14'],
-            ['Third Place Match', 1, '2026-07-18'],
-            ['Final', 1, '2026-07-19'],
-        ];
+        $stadiumsList = Stadium::all();
 
-        foreach ($knockoutStages as $stage) {
-            for ($i = 0; $i < $stage[1]; $i++) {
-                $this->createMatch($teamInstances['USA'], $teamInstances['Brazil'], $stadiums[rand(0, 15)], $stage[0], 'Knockout', Carbon::parse($stage[2])->addDays($i % 3)->setHour(18 + ($i % 3)), 'upcoming');
-            }
-        }
+$roundOf32 = [
+    ['Runner-up Group A', 'Runner-up Group B'],
+    ['Winner Group A', '3rd Group C/D/E/F/G/H/I/J'],
+    ['Winner Group B', '3rd Group E/F/G/H/I/J/K/L'],
+    ['Winner Group C', 'Runner-up Group F'],
+    ['Winner Group F', 'Runner-up Group C'],
+    ['Runner-up Group D', 'Runner-up Group E'],
+    ['Winner Group D', '3rd Group A/B/C/E/F/G/H/I'],
+    ['Winner Group E', '3rd Group A/B/C/D/F/G/H/J'],
+    ['Winner Group I', 'Runner-up Group L'],
+    ['Winner Group L', 'Runner-up Group I'],
+    ['Runner-up Group G', 'Runner-up Group H'],
+    ['Winner Group G', '3rd Group I/J/K/L/A/B/C/D'],
+    ['Winner Group H', 'Runner-up Group J'],
+    ['Winner Group J', 'Runner-up Group H'],
+    ['Runner-up Group K', 'Runner-up Group L'],
+    ['Winner Group K', '3rd Group G/H/I/J/K/L/A/B'],
+];
 
-        // 5. LIVE SIMULATION
-        $first = Game::first();
-        if ($first) {
-            $first->update(['status' => 'live', 'match_date_utc' => Carbon::now(), 'home_score' => 1, 'away_score' => 0]);
-        }
-    }
+$matchNum = 73;
+$knockoutDate = Carbon::create(2026, 6, 28, 18, 0, 0);
+foreach ($roundOf32 as $i => $pairing) {
+    $this->createMatch(null, null, $stadiumsList[rand(0, 15)], 'Round of 32', 'Knockout', $knockoutDate->copy()->addDays($i/4), 'upcoming', $pairing[0], $pairing[1]);
+}
 
-    private function createMatch($home, $away, $stadium, $stage, $group, $date, $status)
-    {
-        return Game::create(['home_team_id' => $home->id, 'away_team_id' => $away->id, 'stadium_id' => $stadium->id, 'match_date_utc' => $date, 'status' => $status, 'home_score' => 0, 'away_score' => 0, 'stage' => $stage, 'group_name' => $group]);
-    }
+$roundOf16 = [
+    ['Winner Match 74', 'Winner Match 77'],
+    ['Winner Match 73', 'Winner Match 75'],
+    ['Winner Match 76', 'Winner Match 78'],
+    ['Winner Match 79', 'Winner Match 80'],
+    ['Winner Match 83', 'Winner Match 84'],
+    ['Winner Match 81', 'Winner Match 82'],
+    ['Winner Match 85', 'Winner Match 88'],
+    ['Winner Match 86', 'Winner Match 87'],
+];
+
+$knockoutDate = Carbon::create(2026, 7, 4, 18, 0, 0);
+foreach ($roundOf16 as $i => $pairing) {
+    $this->createMatch(null, null, $stadiumsList[rand(0, 15)], 'Round of 16', 'Knockout', $knockoutDate->copy()->addDays($i/3), 'upcoming', $pairing[0], $pairing[1]);
+}
+
+$quarterFinals = [
+    ['Winner Match 89', 'Winner Match 90'],
+    ['Winner Match 91', 'Winner Match 92'],
+    ['Winner Match 93', 'Winner Match 94'],
+    ['Winner Match 95', 'Winner Match 96'],
+];
+
+$knockoutDate = Carbon::create(2026, 7, 9, 18, 0, 0);
+foreach ($quarterFinals as $i => $pairing) {
+    $this->createMatch(null, null, $stadiumsList[rand(0, 15)], 'Quarter-finals', 'Knockout', $knockoutDate->copy()->addDays($i/2), 'upcoming', $pairing[0], $pairing[1]);
+}
+
+$semiFinals = [
+    ['Winner Match 97', 'Winner Match 98'],
+    ['Winner Match 99', 'Winner Match 100'],
+];
+
+$knockoutDate = Carbon::create(2026, 7, 14, 18, 0, 0);
+foreach ($semiFinals as $i => $pairing) {
+    $this->createMatch(null, null, $stadiumsList[rand(0, 15)], 'Semi-finals', 'Knockout', $knockoutDate->copy()->addDays($i*2), 'upcoming', $pairing[0], $pairing[1]);
+}
+
+$this->createMatch(null, null, $stadiumsList[rand(0, 15)], 'Third Place Match', 'Knockout', Carbon::create(2026, 7, 18, 18, 0, 0), 'upcoming', 'Loser Match 101', 'Loser Match 102');
+$this->createMatch(null, null, $stadiumsList[rand(0, 15)], 'Final', 'Knockout', Carbon::create(2026, 7, 19, 18, 0, 0), 'upcoming', 'Winner Match 101', 'Winner Match 102');
+
+// 5. LIVE SIMULATION
+$first = Game::first();
+if ($first) {
+    $first->update(['status' => 'live', 'match_date_utc' => Carbon::now(), 'home_score' => 1, 'away_score' => 0]);
+}
+}
+
+private function createMatch($homeId, $awayId, $stadium, $stage, $group, $date, $status, $homePlaceholder = null, $awayPlaceholder = null)
+{
+return Game::create([
+    'home_team_id' => $homeId,
+    'away_team_id' => $awayId,
+    'home_team_placeholder' => $homePlaceholder,
+    'away_team_placeholder' => $awayPlaceholder,
+    'stadium_id' => $stadium->id,
+    'match_date_utc' => $date,
+    'status' => $status,
+    'home_score' => 0,
+    'away_score' => 0,
+    'stage' => $stage,
+    'group_name' => $group
+]);
+}
 }

@@ -50,8 +50,15 @@
 
                         <div class="grid grid-cols-3 items-center">
                             <div class="flex flex-col items-center space-y-2">
-                                <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-16 h-10 object-cover rounded-lg shadow-md group-hover:scale-110 transition-transform" alt="">
-                                <span class="font-bold text-sm text-center">{{ $match->homeTeam->name }}</span>
+                                @if($match->homeTeam)
+                                    <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-16 h-10 object-cover rounded-lg shadow-md group-hover:scale-110 transition-transform" alt="">
+                                    <span class="font-bold text-sm text-center">{{ $match->homeTeam->name }}</span>
+                                @else
+                                    <div class="w-16 h-10 bg-slate-200 dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-400">
+                                        <i data-lucide="users" class="w-6 h-6"></i>
+                                    </div>
+                                    <span class="font-bold text-[10px] text-center text-slate-500 uppercase">{{ $match->home_team_placeholder }}</span>
+                                @endif
                             </div>
 
                             <div class="flex flex-col items-center">
@@ -70,8 +77,15 @@
                             </div>
 
                             <div class="flex flex-col items-center space-y-2">
-                                <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-16 h-10 object-cover rounded-lg shadow-md group-hover:scale-110 transition-transform" alt="">
-                                <span class="font-bold text-sm text-center">{{ $match->awayTeam->name }}</span>
+                                @if($match->awayTeam)
+                                    <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-16 h-10 object-cover rounded-lg shadow-md group-hover:scale-110 transition-transform" alt="">
+                                    <span class="font-bold text-sm text-center">{{ $match->awayTeam->name }}</span>
+                                @else
+                                    <div class="w-16 h-10 bg-slate-200 dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-400">
+                                        <i data-lucide="users" class="w-6 h-6"></i>
+                                    </div>
+                                    <span class="font-bold text-[10px] text-center text-slate-500 uppercase">{{ $match->away_team_placeholder }}</span>
+                                @endif
                             </div>
                         </div>
 
