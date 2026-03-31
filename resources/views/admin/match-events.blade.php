@@ -1,0 +1,122 @@
+@extends('layouts.admin')
+
+@section('title', 'Manage Match Events')
+
+@section('content')
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Event Form -->
+    <div class="lg:col-span-1">
+        <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-700 p-8">
+            <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs mb-8 flex items-center">
+                <i data-lucide="plus-circle" class="w-4 h-4 mr-2 text-primary-500"></i>
+                Add New Event
+            </h3>
+
+            <form action="{{ route('admin.matches.events.store', $match->id) }}" method="POST" class="space-y-6">
+                @csrf
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Team</label>
+                    <select name="team_id" x-model="selectedTeam" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 font-bold focus:ring-2 focus:ring-primary-500 appearance-none">
+                        <option value="{{ $match->home_team_id }}">{{ $match->homeTeam->name }} (Home)</option>
+                        <option value="{{ $match->away_team_id }}">{{ $match->awayTeam->name }} (Away)</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Event Type</label>
+                    <select name="type" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 font-bold focus:ring-2 focus:ring-primary-500 appearance-none">
+                        <option value="goal">Goal</option>
+                        <option value="yellow_card">Yellow Card</option>
+                        <option value="red_card">Red Card</option>
+                        <option value="substitution">Substitution</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Player</label>
+                    <select name="player_id" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 font-bold focus:ring-2 focus:ring-primary-500 appearance-none">
+                        <optgroup label="{{ $match->homeTeam->name }}">
+                            @foreach($match->homeTeam->players as $player)
+                                <option value="{{ $player->id }}">{{ $player->name }}</option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="{{ $match->awayTeam->name }}">
+                            @foreach($match->awayTeam->players as $player)
+                                <option value="{{ $player->id }}">{{ $player->name }}</option>
+                            @endforeach
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Minute</label>
+                    <input type="number" name="minute" min="1" max="120" value="1" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 font-bold focus:ring-2 focus:ring-primary-500">
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-primary-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    ADD EVENT
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Events List -->
+    <div class="lg:col-span-2">
+        <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div class="p-8 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Timeline of Events</h3>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-black text-2xl">{{ $match->home_score }}</span>
+                        <span class="text-slate-300">-</span>
+                        <span class="font-black text-2xl">{{ $match->away_score }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                    @forelse($match->matchEvents->sortBy('minute') as $event)
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                            <!-- Icon -->
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white dark:border-slate-700 bg-slate-100 dark:bg-slate-900 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                @if($event->type === 'goal')
+                                    <i data-lucide="circle-dot" class="w-4 h-4 text-primary-500"></i>
+                                @elseif($event->type === 'yellow_card')
+                                    <div class="w-3 h-4 bg-yellow-400 rounded-sm"></div>
+                                @elseif($event->type === 'red_card')
+                                    <div class="w-3 h-4 bg-red-500 rounded-sm"></div>
+                                @else
+                                    <i data-lucide="repeat" class="w-4 h-4 text-slate-400"></i>
+                                @endif
+                            </div>
+                            <!-- Content -->
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <span class="font-black text-primary-500 text-sm">{{ $event->minute }}'</span>
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-sm">{{ $event->player->name }}</span>
+                                        <span class="text-[10px] uppercase font-black text-slate-400 tracking-widest">{{ $event->team->name }}</span>
+                                    </div>
+                                </div>
+                                <form action="{{ route('admin.matches.events.delete', $event->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-400 hover:text-red-500 p-2">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-10">
+                            <i data-lucide="info" class="w-12 h-12 text-slate-200 mx-auto mb-4"></i>
+                            <p class="text-slate-400 font-bold">No events recorded for this match yet.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
