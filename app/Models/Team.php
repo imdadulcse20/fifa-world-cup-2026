@@ -11,6 +11,13 @@ class Team extends Model
 
     protected $guarded = [];
 
+    protected $appends = ['full_flag_url'];
+
+    public function getFullFlagUrlAttribute()
+    {
+        return $this->flag_url ? url($this->flag_url) : null;
+    }
+
     public function players()
     {
         return $this->hasMany(Player::class);

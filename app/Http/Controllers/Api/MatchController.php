@@ -19,12 +19,16 @@ class MatchController extends Controller
             });
         }
 
-        if ($request->has('group_name')) {
-            $query->where('group_name', $request->group_name);
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
         }
 
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+        if ($request->has('stage') && $request->stage !== 'all') {
+            if ($request->stage === 'Knockout') {
+                $query->where('stage', '!=', 'Group Stage');
+            } else {
+                $query->where('stage', 'Group Stage');
+            }
         }
 
         return response()->json($query->orderBy('match_date_utc', 'asc')->get());
