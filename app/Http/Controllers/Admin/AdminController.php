@@ -25,7 +25,25 @@ class AdminController extends Controller
     public function matches()
     {
         $matches = Game::with(['homeTeam', 'awayTeam'])->orderBy('match_date_utc', 'asc')->paginate(20);
-        return view('admin.matches', compact('matches'));
+        $teams = Team::orderBy('name')->get();
+        $stadiums = \App\Models\Stadium::orderBy('name')->get();
+        return view('admin.matches', compact('matches', 'teams', 'stadiums'));
+    }
+
+    public function storeMatch(Request $request)
+    {
+        $request->validate([
+            'home_team_id' => 'required|exists:teams,id',
+            'away_team_id' => 'required|exists:teams,id',
+            'stadium_id' => 'required|exists:stadiums,id',
+            'match_date_utc' => 'required|date',
+            'match_type' => 'required|in:tournament,friendly',
+            'status' => 'required|in:upcoming,live,finished'
+        ]);
+
+        Game::create($request->all());
+
+        return back()->with('success', 'Match created successfully!');
     }
 
     public function updateMatch(Request $request, $id)

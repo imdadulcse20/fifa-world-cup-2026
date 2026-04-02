@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Stadiums')
+@section('title', '2026 World Cup Host Stadiums & Cities')
+@section('meta_description', 'Discover the world-class stadiums hosting the 2026 World Cup across Canada, Mexico, and the USA. View capacities, locations, and match details.')
 
 @section('content')
 <div class="space-y-6 max-w-lg mx-auto md:max-w-none pb-12">

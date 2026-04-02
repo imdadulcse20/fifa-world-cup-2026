@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Schedule')
+@section('title', '2026 World Cup Match Schedule & Results')
+@section('meta_description', 'View the complete 2026 World Cup match schedule, including group stage games, knockout rounds, and final match dates and times.')
 
 @section('content')
 <div class="space-y-10 max-w-lg mx-auto md:max-w-none pb-12">
@@ -40,7 +41,7 @@
             <div class="space-y-6">
                 @foreach($matches as $match)
                     <div class="p-6 rounded-[2rem] glass dark:glass-dark border border-white/10 hover:border-primary-500/30 transition-colors cursor-pointer group shadow-xl"
-                         onclick="window.location='{{ route('match-details', $match->id) }}'">
+                         onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ $match->stage }}</span>
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $match->status === 'live' ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-200 dark:bg-slate-800 text-slate-500' }}">
@@ -64,9 +65,14 @@
                             <div class="flex flex-col items-center">
                                 @if($match->status === 'upcoming')
                                     <span class="text-2xl font-black opacity-20">VS</span>
-                                    <span class="text-[10px] font-bold text-primary-500 mt-1">
-                                        {{ \Carbon\Carbon::parse($match->match_date_utc)->format('H:i') }}
-                                    </span>
+                                    <div class="flex flex-col items-center mt-1 text-center">
+                                        <div class="local-datetime-short text-[10px] font-bold text-primary-500" data-utc="{{ $match->match_date_utc }}">
+                                            {{ \Carbon\Carbon::parse($match->match_date_utc)->format('H:i') }}
+                                        </div>
+                                        <div class="text-[8px] text-slate-500 font-medium leading-tight mt-1">
+                                            Ground: {{ $match->ground_time }} ({{ $match->stadium->timezone ?? 'UTC' }})
+                                        </div>
+                                    </div>
                                 @else
                                     <div class="text-3xl font-black flex items-center space-x-3 text-primary-500">
                                         <span>{{ $match->home_score }}</span>

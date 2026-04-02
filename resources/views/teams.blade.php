@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Teams')
+@section('title', '2026 World Cup Participating Teams & Squads')
+@section('meta_description', 'Explore all 48 teams participating in the 2026 World Cup. View team profiles, squads, coaches, and FIFA rankings.')
 
 @section('content')
 <div class="space-y-12 max-w-lg mx-auto md:max-w-none pb-12">

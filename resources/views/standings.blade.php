@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Standings')
+@section('title', '2026 World Cup Group Standings & Rankings')
+@section('meta_description', 'Track the latest group standings and rankings for the 2026 World Cup. See points, goal differences, and qualification status for all teams.')
 
 @section('content')
 <div class="space-y-12 max-w-4xl mx-auto pb-20">

@@ -48,9 +48,14 @@ class TournamentController extends Controller
         return view('schedule', compact('groupedMatches'));
     }
 
-    public function matchDetails($id)
+    public function matchDetails($id, $slug = null)
     {
         $match = Game::with(['homeTeam', 'awayTeam', 'stadium', 'matchEvents.player', 'matchEvents.team'])->findOrFail($id);
+
+        if ($slug !== $match->slug) {
+            return redirect()->route('match-details', ['id' => $id, 'slug' => $match->slug]);
+        }
+
         return view('match-details', compact('match'));
     }
 
@@ -104,6 +109,15 @@ class TournamentController extends Controller
     {
         $stadiums = Stadium::all();
         return view('stadiums', compact('stadiums'));
+    }
+
+    public function friendlies()
+    {
+        $matches = Game::with(['homeTeam', 'awayTeam', 'stadium'])
+            ->where('match_type', 'friendly')
+            ->orderBy('match_date_utc', 'desc')
+            ->get();
+        return view('friendlies', compact('matches'));
     }
 
     public function settings()

@@ -11,11 +11,12 @@ use App\Http\Controllers\Web\TournamentController;
 
 Route::get('/', [TournamentController::class, 'home'])->name('home');
 Route::get('/schedule', [TournamentController::class, 'schedule'])->name('schedule');
-Route::get('/match/{id}', [TournamentController::class, 'matchDetails'])->name('match-details');
+Route::get('/match/{id}/{slug?}', [TournamentController::class, 'matchDetails'])->name('match-details');
 Route::get('/standings', [TournamentController::class, 'standings'])->name('standings');
 Route::get('/teams', [TournamentController::class, 'teams'])->name('teams');
 Route::get('/teams/{id}', [TournamentController::class, 'teamDetails'])->name('team-details');
 Route::get('/stadiums', [TournamentController::class, 'stadiums'])->name('stadiums');
+Route::get('/friendlies', [TournamentController::class, 'friendlies'])->name('friendlies');
 Route::get('/settings', [TournamentController::class, 'settings'])->name('settings');
 
 // Admin Auth
@@ -27,6 +28,7 @@ Route::post('/admin/logout', [App\Http\Controllers\Admin\AuthController::class, 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/matches', [App\Http\Controllers\Admin\AdminController::class, 'matches'])->name('matches');
+    Route::post('/matches', [App\Http\Controllers\Admin\AdminController::class, 'storeMatch'])->name('matches.store');
     Route::post('/matches/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateMatch'])->name('matches.update');
     Route::get('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'matchEvents'])->name('matches.events');
     Route::post('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'storeMatchEvent'])->name('matches.events.store');

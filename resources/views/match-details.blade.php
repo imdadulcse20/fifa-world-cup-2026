@@ -1,9 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Match Details')
+@section('title', ($match->homeTeam ? $match->homeTeam->name : $match->home_team_placeholder) . ' vs ' . ($match->awayTeam ? $match->awayTeam->name : $match->away_team_placeholder) . ' - Match Details')
+@section('meta_description', 'Get live scores, events, and details for ' . ($match->homeTeam ? $match->homeTeam->name : $match->home_team_placeholder) . ' vs ' . ($match->awayTeam ? $match->awayTeam->name : $match->away_team_placeholder) . '. Stadium: ' . $match->stadium->name . '.')
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-8 pb-20">
+    <!-- SEO H1 -->
+    <h1 class="sr-only">{{ ($match->homeTeam ? $match->homeTeam->name : $match->home_team_placeholder) }} vs {{ ($match->awayTeam ? $match->awayTeam->name : $match->away_team_placeholder) }} - FIFA World Cup 2026 Match Details</h1>
+
     <a href="{{ url()->previous() }}" class="inline-flex p-2 rounded-xl glass dark:glass-dark text-slate-500 hover:text-primary-500 transition-colors">
         <i data-lucide="arrow-left"></i>
     </a>
@@ -23,7 +27,7 @@
         <div class="grid grid-cols-3 items-center">
             <div class="flex flex-col items-center space-y-4">
                 @if($match->homeTeam)
-                    <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="">
+                    <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="{{ $match->homeTeam->name }} flag">
                     <span class="text-xl md:text-3xl font-black text-center">{{ $match->homeTeam->name }}</span>
                 @else
                     <div class="w-24 h-16 md:w-32 md:h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 mb-4 shadow-2xl">
@@ -44,7 +48,7 @@
 
             <div class="flex flex-col items-center space-y-4">
                 @if($match->awayTeam)
-                    <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="">
+                    <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-24 h-16 md:w-32 md:h-20 object-cover rounded-2xl shadow-2xl mb-4" alt="{{ $match->awayTeam->name }} flag">
                     <span class="text-xl md:text-3xl font-black text-center">{{ $match->awayTeam->name }}</span>
                 @else
                     <div class="w-24 h-16 md:w-32 md:h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 mb-4 shadow-2xl">
@@ -55,18 +59,24 @@
             </div>
         </div>
 
-        <div class="mt-12 flex flex-wrap justify-center gap-6 pt-8 border-t border-white/5 text-sm text-slate-500 font-medium">
-            <div class="flex items-center space-x-2">
-                <i data-lucide="calendar" class="w-4 h-4 text-primary-500"></i>
-                <span>{{ \Carbon\Carbon::parse($match->match_date_utc)->format('F d, Y') }}</span>
+        <div class="mt-12 flex flex-col md:flex-row justify-center gap-8 pt-8 border-t border-white/5 text-sm text-slate-500 font-medium">
+            <div class="flex items-center space-x-3 bg-white/5 p-4 rounded-2xl">
+                <i data-lucide="clock" class="w-6 h-6 text-primary-500"></i>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">Your Local Time</span>
+                    <span class="local-datetime-full font-bold text-slate-900 dark:text-slate-100" data-utc="{{ $match->match_date_utc }}">
+                        {{ \Carbon\Carbon::parse($match->match_date_utc)->format('F d, Y, H:i') }}
+                    </span>
+                </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <i data-lucide="clock" class="w-4 h-4 text-primary-500"></i>
-                <span>{{ \Carbon\Carbon::parse($match->match_date_utc)->format('H:i') }}</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <i data-lucide="map-pin" class="w-4 h-4 text-primary-500"></i>
-                <span>{{ $match->stadium->name }}, {{ $match->stadium->city }}</span>
+
+            <div class="flex items-center space-x-3 bg-white/5 p-4 rounded-2xl">
+                <i data-lucide="map-pin" class="w-6 h-6 text-primary-500"></i>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-black text-slate-500 tracking-widest mb-1">Ground Time (Stadium)</span>
+                    <span class="font-bold text-slate-900 dark:text-slate-100">{{ $match->ground_time_full }}</span>
+                    <span class="text-[10px] opacity-70">{{ $match->stadium->name }}, {{ $match->stadium->city }}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -131,4 +141,31 @@
         </section>
     </div>
 </div>
+
+{{-- JSON-LD Structured Data for SportsEvent --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  "name": "{{ ($match->homeTeam ? $match->homeTeam->name : $match->home_team_placeholder) }} vs {{ ($match->awayTeam ? $match->awayTeam->name : $match->away_team_placeholder) }}",
+  "startDate": "{{ \Carbon\Carbon::parse($match->match_date_utc)->toIso8601String() }}",
+  "location": {
+    "@type": "Place",
+    "name": "{{ $match->stadium->name }}",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{ $match->stadium->city }}"
+    }
+  },
+  "homeTeam": {
+    "@type": "SportsTeam",
+    "name": "{{ $match->homeTeam ? $match->homeTeam->name : $match->home_team_placeholder }}"
+  },
+  "awayTeam": {
+    "@type": "SportsTeam",
+    "name": "{{ $match->awayTeam ? $match->awayTeam->name : $match->away_team_placeholder }}"
+  },
+  "eventStatus": "https://schema.org/{{ $match->status === 'finished' ? 'EventPostponed' : ($match->status === 'live' ? 'EventScheduled' : 'EventScheduled') }}"
+}
+</script>
 @endsection

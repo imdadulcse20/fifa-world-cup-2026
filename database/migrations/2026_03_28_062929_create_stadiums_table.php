@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('city');
+            $table->string('timezone')->default('UTC');
             $table->integer('capacity');
             $table->string('image_url')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
