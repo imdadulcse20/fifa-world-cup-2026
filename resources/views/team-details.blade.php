@@ -81,8 +81,7 @@
                 <div class="space-y-4">
                     @foreach($matches as $match)
                         <div class="p-5 rounded-3xl glass dark:glass-dark border border-white/5 space-y-4 cursor-pointer hover:bg-white/5 transition-colors"
-                             onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
-                            <div class="flex justify-between items-center text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                             onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">                            <div class="flex justify-between items-center text-[10px] font-black text-slate-500 uppercase tracking-widest">
                                 <span>{{ $match->stage }}</span>
                                 <span class="{{ $match->status === 'live' ? 'text-red-500 animate-pulse' : '' }}">{{ $match->status }}</span>
                             </div>

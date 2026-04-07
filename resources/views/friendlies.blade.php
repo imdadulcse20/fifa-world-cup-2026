@@ -14,8 +14,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($matches as $match)
                 <div class="p-6 rounded-[2rem] glass dark:glass-dark border border-white/10 hover:border-primary-500/30 transition-colors cursor-pointer group shadow-xl"
-                     onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
-                    
+                     onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">                    
                     <div class="flex justify-between items-center mb-6">
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $match->status === 'live' ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-200 dark:bg-slate-800 text-slate-500' }}">
                             {{ strtoupper($match->status) }}

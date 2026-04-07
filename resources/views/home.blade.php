@@ -32,7 +32,7 @@
             <div class="flex space-x-4 overflow-x-auto pb-4 snap-x no-scrollbar">
                 @foreach($liveMatches as $match)
                     <div class="min-w-[300px] snap-center p-6 rounded-[2rem] glass dark:glass-dark border border-white/20 shadow-2xl relative overflow-hidden group cursor-pointer" 
-                         onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
+                         onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">
                         
                         <div class="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1">
                             <i data-lucide="play" class="w-2 h-2 fill-current"></i>
@@ -132,7 +132,7 @@
         <div x-show="tab === 'tournament'" x-transition class="space-y-4">
             @forelse($upcomingTournamentMatches as $match)
                 <div class="flex items-center justify-between p-4 rounded-3xl glass dark:glass-dark border border-white/5 cursor-pointer hover:border-primary-500/30 transition-all"
-                     onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
+                     onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">
                     <div class="flex items-center space-x-4 flex-1">
                         @if($match->homeTeam)
                             <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">
@@ -180,7 +180,7 @@
         <div x-show="tab === 'friendly'" x-transition class="space-y-4">
             @forelse($upcomingFriendlyMatches as $match)
                 <div class="flex items-center justify-between p-4 rounded-3xl glass dark:glass-dark border border-white/5 cursor-pointer hover:border-primary-500/30 transition-all"
-                     onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
+                     onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">
                     <div class="flex items-center space-x-4 flex-1">
                         @if($match->homeTeam)
                             <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">

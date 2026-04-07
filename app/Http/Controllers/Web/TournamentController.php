@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\Stadium;
 use App\Models\Standing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TournamentController extends Controller
 {
@@ -61,12 +62,21 @@ class TournamentController extends Controller
         return view('schedule', compact('tournamentMatches', 'friendlyMatches'));
     }
 
-    public function matchDetails($id, $slug = null)
+    public function matchDetails($slug_id)
     {
+        // Extract ID from the end of the string (e.g. mexico-vs-south-africa-1)
+        if (preg_match('/-([0-9]+)$/', $slug_id, $matches)) {
+            $id = $matches[1];
+            $slug = Str::beforeLast($slug_id, '-');
+        } else {
+            abort(404);
+        }
+
         $match = Game::with(['homeTeam', 'awayTeam', 'stadium', 'matchEvents.player', 'matchEvents.team'])->findOrFail($id);
 
+        // Canonical redirect if slug is wrong
         if ($slug !== $match->slug) {
-            return redirect()->route('match-details', ['id' => $id, 'slug' => $match->slug]);
+            return redirect()->route('match-details', ['slug_id' => $match->slug . '-' . $match->id]);
         }
 
         return view('match-details', compact('match'));

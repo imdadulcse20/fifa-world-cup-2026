@@ -64,8 +64,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     @foreach($matches as $match)
                         <div class="p-6 rounded-[2rem] glass dark:glass-dark border border-white/10 hover:border-primary-500/30 transition-colors cursor-pointer group shadow-xl"
-                             onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
-                            <div class="flex justify-between items-center mb-4">
+                             onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">                            <div class="flex justify-between items-center mb-4">
                                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ $match->stage }}</span>
                                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $match->status === 'live' ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-200 dark:bg-slate-800 text-slate-500' }}">
                                     {{ strtoupper($match->status) }}
@@ -148,8 +147,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     @foreach($matches as $match)
                         <div class="p-6 rounded-[2rem] glass dark:glass-dark border border-white/10 hover:border-primary-500/30 transition-colors cursor-pointer group shadow-xl"
-                             onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
-                            <div class="flex justify-between items-center mb-4">
+                             onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">                            <div class="flex justify-between items-center mb-4">
                                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">FRIENDLY</span>
                                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $match->status === 'live' ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-200 dark:bg-slate-800 text-slate-500' }}">
                                     {{ strtoupper($match->status) }}
