@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $site_settings['app_name'] ?? '2026 World Cup' }} - @yield('title')</title>
+    
+    <script>
+        // Inline script to prevent theme flash
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <meta name="description" content="@yield('meta_description', 'Get the latest 2026 World Cup scores, schedule, standings and team news. Stay updated with live match events and stadium information.')">
     <meta name="keywords" content="@yield('meta_keywords', '2026 World Cup, football scores, live soccer, match schedule, world cup standings, stadiums')">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -58,7 +67,7 @@
             </div>
         </div>
 
-        <button x-data @click="document.documentElement.classList.toggle('dark')" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-all hover:scale-110 active:scale-95 shadow-lg border border-slate-200 dark:border-slate-800">
+        <button x-data @click="toggleTheme()" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-all hover:scale-110 active:scale-95 shadow-lg border border-slate-200 dark:border-slate-800">
             <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
             <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
         </button>
@@ -233,6 +242,16 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             const formatTimezone = (date) => {

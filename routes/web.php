@@ -29,19 +29,24 @@ Route::post('/admin/login', [App\Http\Controllers\Admin\AuthController::class, '
 Route::post('/admin/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,faq_manager'])->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/matches', [App\Http\Controllers\Admin\AdminController::class, 'matches'])->name('matches');
-    Route::post('/matches', [App\Http\Controllers\Admin\AdminController::class, 'storeMatch'])->name('matches.store');
-    Route::post('/matches/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateMatch'])->name('matches.update');
-    Route::get('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'matchEvents'])->name('matches.events');
-    Route::post('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'storeMatchEvent'])->name('matches.events.store');
-    Route::delete('/events/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteMatchEvent'])->name('matches.events.delete');
-    Route::get('/settings', [App\Http\Controllers\Admin\AdminController::class, 'settings'])->name('settings');
-    Route::post('/settings', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('settings.update');
-
+    
+    // FAQ routes - accessible by both admin and faq_manager
     Route::get('/faqs', [App\Http\Controllers\Admin\AdminController::class, 'faqs'])->name('faqs');
     Route::post('/faqs', [App\Http\Controllers\Admin\AdminController::class, 'storeFaq'])->name('faqs.store');
     Route::post('/faqs/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateFaq'])->name('faqs.update');
     Route::delete('/faqs/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteFaq'])->name('faqs.delete');
+
+    // Admin-only routes
+    Route::middleware('role:admin')->group(function() {
+        Route::get('/matches', [App\Http\Controllers\Admin\AdminController::class, 'matches'])->name('matches');
+        Route::post('/matches', [App\Http\Controllers\Admin\AdminController::class, 'storeMatch'])->name('matches.store');
+        Route::post('/matches/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateMatch'])->name('matches.update');
+        Route::get('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'matchEvents'])->name('matches.events');
+        Route::post('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'storeMatchEvent'])->name('matches.events.store');
+        Route::delete('/events/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteMatchEvent'])->name('matches.events.delete');
+        Route::get('/settings', [App\Http\Controllers\Admin\AdminController::class, 'settings'])->name('settings');
+        Route::post('/settings', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('settings.update');
+    });
 });

@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - {{ $site_settings['app_name'] ?? 'FWC 2026' }}</title>
+    
+    <script>
+        // Inline script to prevent theme flash
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
@@ -16,6 +25,7 @@
                 <span class="text-xl font-black text-primary-600 uppercase tracking-tighter">Admin Portal</span>
             </div>
             <nav class="mt-6 px-4 space-y-2">
+                @if(auth()->user()->role === 'admin')
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 p-3 rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-primary-50 text-primary-600' : 'hover:bg-slate-50 text-slate-500' }}">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                     <span class="font-bold">Dashboard</span>
@@ -28,6 +38,7 @@
                     <i data-lucide="settings" class="w-5 h-5"></i>
                     <span class="font-bold">Portal Settings</span>
                 </a>
+                @endif
                 <a href="{{ route('admin.faqs') }}" class="flex items-center space-x-3 p-3 rounded-xl {{ request()->routeIs('admin.faqs') ? 'bg-primary-50 text-primary-600' : 'hover:bg-slate-50 text-slate-500' }}">
                     <i data-lucide="help-circle" class="w-5 h-5"></i>
                     <span class="font-bold">Manage FAQs</span>
@@ -45,11 +56,29 @@
         <main class="flex-1">
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-8">
                 <h2 class="font-bold">@yield('title')</h2>
-                <div class="flex items-center space-x-4">
-                    <button class="p-2 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500">
-                        <i data-lucide="bell" class="w-4 h-4"></i>
+                <div class="flex items-center space-x-6">
+                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 hover:scale-110 transition-all">
+                        <i data-lucide="sun" class="hidden dark:block w-4 h-4"></i>
+                        <i data-lucide="moon" class="block dark:hidden w-4 h-4"></i>
                     </button>
-                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-xs">A</div>
+
+                    <div class="flex items-center space-x-3 border-r border-slate-200 dark:border-slate-700 pr-6 ml-4">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ auth()->user()->name }}</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ str_replace('_', ' ', auth()->user()->role) }}</p>
+                        </div>
+                        <div class="w-10 h-10 bg-primary-500 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-primary-500/20">
+                            {{ substr(auth()->user()->name, 0, 1) }}
+                        </div>
+                    </div>
+
+                    <form action="{{ route('admin.logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="flex items-center space-x-2 text-slate-400 hover:text-red-500 transition-colors group">
+                            <i data-lucide="log-out" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                            <span class="font-bold text-xs uppercase tracking-widest hidden md:block">Logout</span>
+                        </button>
+                    </form>
                 </div>
             </header>
 
@@ -66,6 +95,18 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+    </script>
 </body>
 </html>

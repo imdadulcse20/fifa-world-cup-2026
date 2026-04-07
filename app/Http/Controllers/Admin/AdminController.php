@@ -67,6 +67,10 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        if (auth()->user()->role === 'faq_manager') {
+            return redirect()->route('admin.faqs');
+        }
+
         $stats = [
             'total_matches' => Game::count(),
             'live_matches' => Game::where('status', 'live')->count(),
