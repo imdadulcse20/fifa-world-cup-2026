@@ -18,6 +18,10 @@ Route::get('/teams/{id}', [TournamentController::class, 'teamDetails'])->name('t
 Route::get('/stadiums', [TournamentController::class, 'stadiums'])->name('stadiums');
 Route::get('/friendlies', [TournamentController::class, 'friendlies'])->name('friendlies');
 Route::get('/settings', [TournamentController::class, 'settings'])->name('settings');
+Route::get('/privacy-policy', [TournamentController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/terms-conditions', [TournamentController::class, 'termsConditions'])->name('terms-conditions');
+Route::get('/contact', [TournamentController::class, 'contact'])->name('contact');
+Route::get('/about', [TournamentController::class, 'about'])->name('about');
 
 // Admin Auth
 Route::get('/admin/login', [App\Http\Controllers\Admin\AuthController::class, 'showLogin'])->name('admin.login');
@@ -35,4 +39,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::delete('/events/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteMatchEvent'])->name('matches.events.delete');
     Route::get('/settings', [App\Http\Controllers\Admin\AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('settings.update');
+
+    Route::get('/faqs', [App\Http\Controllers\Admin\AdminController::class, 'faqs'])->name('faqs');
+    Route::post('/faqs', [App\Http\Controllers\Admin\AdminController::class, 'storeFaq'])->name('faqs.store');
+    Route::post('/faqs/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateFaq'])->name('faqs.update');
+    Route::delete('/faqs/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteFaq'])->name('faqs.delete');
 });

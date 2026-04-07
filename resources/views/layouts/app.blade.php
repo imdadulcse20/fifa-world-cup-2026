@@ -22,6 +22,8 @@
     <meta property="twitter:description" content="@yield('meta_description', 'Get the latest 2026 World Cup scores, schedule, standings and team news.')">
     <meta property="twitter:image" content="{{ asset('images/og-image.jpg') }}">
 
+    @stack('meta')
+
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
@@ -38,43 +40,195 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-primary-500/30 min-h-screen pb-24 md:pb-0 md:pl-20">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-primary-500/30 min-h-screen">
     
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 md:bottom-0 md:right-auto md:w-20 glass dark:glass-dark border-b md:border-r border-white/10 px-4 py-2 md:py-8 flex flex-row md:flex-col justify-between items-center">
-        <div class="flex items-center space-x-2 md:space-x-0 md:space-y-8 md:flex-col">
-            <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20">
-                <span class="text-white font-bold text-xl">26</span>
+    <!-- Navigation (Sidebar Desktop) -->
+    <nav class="fixed top-0 left-0 bottom-0 w-20 hidden md:flex flex-col justify-between items-center py-8 glass dark:glass-dark border-r border-white/10 z-[100]">
+        <div class="flex flex-col items-center space-y-8">
+            <div class="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20">
+                <span class="text-white font-black text-xl">26</span>
+            </div>
+            
+            <div class="flex flex-col space-y-6">
+                @include('layouts.nav-item', ['route' => 'home', 'icon' => 'home', 'label' => 'Home'])
+                @include('layouts.nav-item', ['route' => 'schedule', 'icon' => 'calendar', 'label' => 'Matches'])
+                @include('layouts.nav-item', ['route' => 'standings', 'icon' => 'trophy', 'label' => 'Standings'])
+                @include('layouts.nav-item', ['route' => 'teams', 'icon' => 'users', 'label' => 'Teams'])
+                @include('layouts.nav-item', ['route' => 'friendlies', 'icon' => 'flag', 'label' => 'Friendlies'])
             </div>
         </div>
 
-        <div class="hidden md:flex flex-col space-y-6">
-            @include('layouts.nav-item', ['route' => 'home', 'icon' => 'home', 'label' => 'Home'])
-            @include('layouts.nav-item', ['route' => 'schedule', 'icon' => 'calendar', 'label' => 'Matches'])
-            @include('layouts.nav-item', ['route' => 'standings', 'icon' => 'trophy', 'label' => 'Standings'])
-            @include('layouts.nav-item', ['route' => 'teams', 'icon' => 'users', 'label' => 'Teams'])
-            @include('layouts.nav-item', ['route' => 'friendlies', 'icon' => 'flag', 'label' => 'Friendlies'])
-        </div>
-
-        <button x-data @click="document.documentElement.classList.toggle('dark')" class="p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all hover:scale-110 active:scale-95 shadow-lg">
+        <button x-data @click="document.documentElement.classList.toggle('dark')" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-all hover:scale-110 active:scale-95 shadow-lg border border-slate-200 dark:border-slate-800">
             <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
             <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
         </button>
     </nav>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="md:hidden fixed bottom-6 left-6 right-6 z-50 h-16 glass dark:glass-dark rounded-2xl flex items-center justify-around px-4 border border-white/20 shadow-2xl">
+    <nav class="md:hidden fixed bottom-6 left-6 right-6 h-16 glass dark:glass-dark rounded-2xl flex items-center justify-around px-4 border border-white/20 shadow-2xl z-[100]">
         @include('layouts.nav-item', ['route' => 'home', 'icon' => 'home', 'label' => 'Home'])
         @include('layouts.nav-item', ['route' => 'schedule', 'icon' => 'calendar', 'label' => 'Matches'])
         @include('layouts.nav-item', ['route' => 'standings', 'icon' => 'trophy', 'label' => 'Standings'])
         @include('layouts.nav-item', ['route' => 'teams', 'icon' => 'users', 'label' => 'Teams'])
         @include('layouts.nav-item', ['route' => 'friendlies', 'icon' => 'flag', 'label' => 'Friendlies'])
-        @include('layouts.nav-item', ['route' => 'settings', 'icon' => 'settings', 'label' => 'Settings'])
     </nav>
 
-    <main class="container mx-auto px-4 pt-20 md:pt-8">
-        @yield('content')
-    </main>
+    <!-- Main Content Wrapper -->
+    <div class="md:pl-20">
+        <main class="container mx-auto px-4 pt-12 pb-24 md:pb-12">
+            @yield('content')
+
+            @if(isset($faqs) && $faqs->count() > 0)
+                <section class="mt-32 mb-12 relative">
+                    <div class="max-w-3xl mx-auto">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Helpful Information</h2>
+                            <div class="w-12 h-1.5 bg-primary-500 mx-auto mt-4 rounded-full"></div>
+                        </div>
+                        
+                        <div class="space-y-4" x-data="{ activeFaq: null }">
+                            @foreach($faqs as $faq)
+                                <div class="bg-white dark:bg-slate-900/50 rounded-[2rem] border border-slate-100 dark:border-slate-800/50 overflow-hidden shadow-sm transition-all hover:shadow-md backdrop-blur-sm">
+                                    <button 
+                                        @click="activeFaq === {{ $faq->id }} ? activeFaq = null : activeFaq = {{ $faq->id }}"
+                                        class="w-full px-8 py-6 text-left flex items-center justify-between group"
+                                    >
+                                        <span class="font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary-500 transition-colors">{{ $faq->question }}</span>
+                                        <i 
+                                            data-lucide="chevron-down" 
+                                            class="w-5 h-5 text-slate-400 transition-transform duration-300"
+                                            :class="{ 'rotate-180 text-primary-500': activeFaq === {{ $faq->id }} }"
+                                        ></i>
+                                    </button>
+                                    <div 
+                                        x-show="activeFaq === {{ $faq->id }}" 
+                                        x-transition:enter="transition ease-out duration-300"
+                                        x-transition:enter-start="opacity-0 -translate-y-2"
+                                        x-transition:enter-end="opacity-100 translate-y-0"
+                                        class="px-8 pb-6 text-slate-500 dark:text-slate-400 leading-relaxed text-sm"
+                                    >
+                                        {{ $faq->answer }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+            @endif
+        </main>
+
+        <footer class="relative pt-24 pb-12 overflow-hidden bg-slate-50/50 dark:bg-transparent">
+            <!-- Decoration Background -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary-500/20 to-transparent"></div>
+            <div class="absolute -top-48 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary-500/[0.03] blur-[120px] rounded-full pointer-events-none"></div>
+
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
+                    <!-- Brand Section -->
+                    <div class="lg:col-span-4 space-y-8">
+                        <div class="space-y-4">
+                            <a href="{{ route('home') }}" class="inline-flex items-center space-x-3 group">
+                                <div class="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary-500/40 group-hover:rotate-6 transition-transform duration-500">
+                                    <span class="text-white font-black text-xl">26</span>
+                                </div>
+                                <span class="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">
+                                    {{ $site_settings['app_name'] ?? 'FWC 2026' }}
+                                </span>
+                            </a>
+                            <p class="text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-sm text-sm">
+                                Experience the magic of the world's greatest stage. Every goal, every moment, every emotion — captured in real-time.
+                            </p>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            @foreach(['twitter', 'facebook', 'instagram', 'youtube'] as $social)
+                                <a href="#" class="w-11 h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center text-slate-400 hover:text-primary-500 hover:border-primary-500/50 hover:shadow-lg hover:shadow-primary-500/10 transition-all duration-300">
+                                    <i data-lucide="{{ $social }}" class="w-5 h-5"></i>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Links Grid -->
+                    <div class="lg:col-span-5 grid grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-primary-500">Tournament</h3>
+                            <ul class="space-y-4">
+                                @foreach([
+                                    'schedule' => 'Match Schedule',
+                                    'standings' => 'Group Standings',
+                                    'teams' => 'National Teams',
+                                    'stadiums' => 'Host Stadiums'
+                                ] as $route => $label)
+                                    <li>
+                                        <a href="{{ route($route) }}" class="group flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-sm transition-all">
+                                            <span class="w-0 group-hover:w-4 h-0.5 bg-primary-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
+                                            {{ $label }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <div class="space-y-6">
+                            <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-primary-500">Legal & Support</h3>
+                            <ul class="space-y-4">
+                                @foreach([
+                                    'about' => 'About the Event',
+                                    'contact' => 'Get in Touch',
+                                    'privacy-policy' => 'Privacy Policy',
+                                    'terms-conditions' => 'Terms of Service'
+                                ] as $route => $label)
+                                    <li>
+                                        <a href="{{ route($route) }}" class="group flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-sm transition-all">
+                                            <span class="w-0 group-hover:w-4 h-0.5 bg-primary-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
+                                            {{ $label }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter Section -->
+                    <div class="lg:col-span-3 space-y-6">
+                        <div class="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-8 border border-slate-100 dark:border-white/5 relative overflow-hidden group shadow-sm">
+                            <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-500/10 blur-2xl rounded-full"></div>
+                            
+                            <h3 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight mb-2">Stay in the Loop</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-6 leading-relaxed">Get the latest scores and news delivered to your inbox.</p>
+                            
+                            <form action="#" class="space-y-3" onsubmit="alert('Subscribed!'); return false;">
+                                <input type="email" placeholder="Your email..." required class="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-primary-500 transition-all">
+                                <button type="submit" class="w-full py-4 bg-primary-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary-500/20 hover:scale-[1.02] active:scale-95 transition-all">
+                                    Subscribe
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Copyright Section -->
+                <div class="pt-10 border-t border-slate-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex items-center space-x-6">
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                            &copy; {{ date('Y') }} {{ $site_settings['app_name'] ?? 'FWC 2026' }}
+                        </p>
+                        <div class="h-4 w-px bg-slate-200 dark:bg-slate-800 hidden md:block"></div>
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest hidden md:block">
+                            Designed for the beautiful game
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 px-4 py-2 bg-slate-100 dark:bg-slate-900 rounded-full border border-slate-200 dark:border-slate-800">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Powered by</span>
+                        <span class="text-[9px] font-black text-primary-500 uppercase">Football Spirit</span>
+                        <i data-lucide="heart" class="w-3 h-3 text-red-500 fill-current ml-1"></i>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
@@ -120,4 +274,3 @@
     </script>
 </body>
 </html>
-l>

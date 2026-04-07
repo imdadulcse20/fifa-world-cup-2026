@@ -7,10 +7,64 @@ use App\Models\Game;
 use App\Models\Team;
 use App\Models\Standing;
 use App\Models\Setting;
+use App\Models\Faq;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    public function faqs()
+    {
+        $faqs = Faq::orderBy('page')->orderBy('sort_order')->get();
+        $pages = [
+            'home' => 'Home',
+            'schedule' => 'Matches/Schedule',
+            'match-details' => 'Match Details',
+            'standings' => 'Standings',
+            'teams' => 'Teams',
+            'team-details' => 'Team Details',
+            'stadiums' => 'Stadiums',
+            'friendlies' => 'Friendlies',
+            'settings' => 'Settings',
+        ];
+        return view('admin.faqs', compact('faqs', 'pages'));
+    }
+
+    public function storeFaq(Request $request)
+    {
+        $request->validate([
+            'page' => 'required|string',
+            'question' => 'required|string',
+            'answer' => 'required|string',
+            'sort_order' => 'integer'
+        ]);
+
+        Faq::create($request->all());
+
+        return back()->with('success', 'FAQ created successfully!');
+    }
+
+    public function updateFaq(Request $request, $id)
+    {
+        $faq = Faq::findOrFail($id);
+        
+        $request->validate([
+            'page' => 'required|string',
+            'question' => 'required|string',
+            'answer' => 'required|string',
+            'sort_order' => 'integer'
+        ]);
+
+        $faq->update($request->all());
+
+        return back()->with('success', 'FAQ updated successfully!');
+    }
+
+    public function deleteFaq($id)
+    {
+        Faq::findOrFail($id)->delete();
+        return back()->with('success', 'FAQ deleted successfully!');
+    }
+
     public function dashboard()
     {
         $stats = [
@@ -22,12 +76,31 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats'));
     }
 
-    public function matches()
+    public function matches(Request $request)
     {
-        $matches = Game::with(['homeTeam', 'awayTeam'])->orderBy('match_date_utc', 'asc')->paginate(20);
+        $query = Game::with(['homeTeam', 'awayTeam'])->orderBy('match_date_utc', 'asc');
+        
+        if ($request->filled('type')) {
+            $query->where('match_type', $request->type);
+        }
+
+        if ($request->filled('stage')) {
+            $query->where('stage', $request->stage);
+        }
+
+        if ($request->filled('group')) {
+            $query->where('group_name', $request->group);
+        }
+        
+        $matches = $query->paginate(20)->withQueryString();
+        
         $teams = Team::orderBy('name')->get();
         $stadiums = \App\Models\Stadium::orderBy('name')->get();
-        return view('admin.matches', compact('matches', 'teams', 'stadiums'));
+        
+        $stages = Game::distinct()->whereNotNull('stage')->pluck('stage');
+        $groups = Team::distinct()->whereNotNull('group_name')->pluck('group_name');
+
+        return view('admin.matches', compact('matches', 'teams', 'stadiums', 'stages', 'groups'));
     }
 
     public function storeMatch(Request $request)

@@ -3,6 +3,10 @@
 @section('title', '2026 World Cup Live Scores, Schedule & Standings')
 @section('meta_description', 'Stay updated with the 2026 World Cup. Get live scores, match schedules, group standings, and stadium information in one place.')
 
+@push('meta')
+    <meta name="google-site-verification" content="b7uLfYQBrBkddjmhlhAkskVTsJEoDC9kOzXevLwtwN0" />
+@endpush
+
 @section('content')
 <div class="space-y-8 max-w-lg mx-auto md:max-w-none pb-12">
     <!-- Hero/Welcome Section -->
@@ -110,16 +114,23 @@
         </a>
     </section>
 
-    <!-- Upcoming Matches -->
-    <section>
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">Upcoming Matches</h2>
-            <a href="{{ route('schedule') }}" class="text-primary-500 text-sm font-semibold flex items-center">
-                View All <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
-            </a>
+    <!-- Upcoming Matches with Tabs -->
+    <section x-data="{ tab: 'tournament' }">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+            <h2 class="text-xl font-bold uppercase tracking-tight">Upcoming Matches</h2>
+            <div class="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl w-fit">
+                <button @click="tab = 'tournament'" :class="tab === 'tournament' ? 'bg-white dark:bg-slate-800 shadow-sm text-primary-500' : 'text-slate-500'" class="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                    World Cup
+                </button>
+                <button @click="tab = 'friendly'" :class="tab === 'friendly' ? 'bg-white dark:bg-slate-800 shadow-sm text-primary-500' : 'text-slate-500'" class="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                    Friendlies
+                </button>
+            </div>
         </div>
-        <div class="space-y-4">
-            @foreach($upcomingMatches as $match)
+
+        <!-- Tournament Matches Tab -->
+        <div x-show="tab === 'tournament'" x-transition class="space-y-4">
+            @forelse($upcomingTournamentMatches as $match)
                 <div class="flex items-center justify-between p-4 rounded-3xl glass dark:glass-dark border border-white/5 cursor-pointer hover:border-primary-500/30 transition-all"
                      onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
                     <div class="flex items-center space-x-4 flex-1">
@@ -153,53 +164,64 @@
                         @endif
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="p-8 rounded-3xl glass dark:glass-dark text-center text-slate-500 italic">
+                    No upcoming tournament matches found.
+                </div>
+            @endforelse
+            @if($upcomingTournamentMatches->count() > 0)
+                <div class="text-center pt-2">
+                    <a href="{{ route('schedule') }}" class="text-primary-500 text-xs font-black uppercase tracking-widest hover:underline">View Full Schedule</a>
+                </div>
+            @endif
         </div>
-    </section>
 
-    <!-- FAQ Section -->
-    <section class="max-w-3xl mx-auto py-12">
-        <h2 class="text-3xl font-black mb-8 text-center">Frequently Asked Questions</h2>
-        <div class="space-y-4" x-data="{ selected: 1 }">
-            <div class="rounded-3xl glass dark:glass-dark border border-white/5 overflow-hidden">
-                <button @click="selected !== 1 ? selected = 1 : selected = null" class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-white/5 transition-colors">
-                    <span class="font-bold">When does the 2026 World Cup start?</span>
-                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform" :class="selected === 1 ? 'rotate-180' : ''"></i>
-                </button>
-                <div x-show="selected === 1" x-collapse class="px-8 pb-6 text-slate-500 text-sm leading-relaxed">
-                    The FIFA World Cup 2026 is scheduled to take place from June to July 2026, hosted jointly by Canada, Mexico, and the United States.
-                </div>
-            </div>
+        <!-- Friendly Matches Tab -->
+        <div x-show="tab === 'friendly'" x-transition class="space-y-4">
+            @forelse($upcomingFriendlyMatches as $match)
+                <div class="flex items-center justify-between p-4 rounded-3xl glass dark:glass-dark border border-white/5 cursor-pointer hover:border-primary-500/30 transition-all"
+                     onclick="window.location='{{ route('match-details', ['id' => $match->id, 'slug' => $match->slug]) }}'">
+                    <div class="flex items-center space-x-4 flex-1">
+                        @if($match->homeTeam)
+                            <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">
+                            <span class="font-bold text-sm truncate max-w-[80px]">{{ $match->homeTeam->name }}</span>
+                        @else
+                            <div class="w-8 h-5 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center text-slate-400">
+                                <i data-lucide="users" class="w-3 h-3"></i>
+                            </div>
+                            <span class="font-bold text-[10px] truncate max-w-[80px] text-slate-500 uppercase">{{ $match->home_team_placeholder }}</span>
+                        @endif
+                    </div>
+                    
+                    <div class="flex flex-col items-center px-4">
+                        <span class="text-xs font-bold text-primary-500">
+                            {{ \Carbon\Carbon::parse($match->match_date_utc)->format('H:i') }}
+                        </span>
+                        <span class="text-[10px] text-slate-500">{{ \Carbon\Carbon::parse($match->match_date_utc)->format('M d') }}</span>
+                    </div>
 
-            <div class="rounded-3xl glass dark:glass-dark border border-white/5 overflow-hidden">
-                <button @click="selected !== 2 ? selected = 2 : selected = null" class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-white/5 transition-colors">
-                    <span class="font-bold">How many teams are participating?</span>
-                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform" :class="selected === 2 ? 'rotate-180' : ''"></i>
-                </button>
-                <div x-show="selected === 2" x-collapse class="px-8 pb-6 text-slate-500 text-sm leading-relaxed">
-                    The 2026 edition will be the first to feature 48 teams, expanded from the previous 32-team format, providing more opportunities for nations worldwide to compete.
+                    <div class="flex items-center justify-end space-x-4 flex-1">
+                        @if($match->awayTeam)
+                            <span class="font-bold text-sm truncate max-w-[80px] text-right">{{ $match->awayTeam->name }}</span>
+                            <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">
+                        @else
+                            <span class="font-bold text-[10px] truncate max-w-[80px] text-right text-slate-500 uppercase">{{ $match->away_team_placeholder }}</span>
+                            <div class="w-8 h-5 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center text-slate-400">
+                                <i data-lucide="users" class="w-3 h-3"></i>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-            </div>
-
-            <div class="rounded-3xl glass dark:glass-dark border border-white/5 overflow-hidden">
-                <button @click="selected !== 3 ? selected = 3 : selected = null" class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-white/5 transition-colors">
-                    <span class="font-bold">Where can I see the full schedule?</span>
-                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform" :class="selected === 3 ? 'rotate-180' : ''"></i>
-                </button>
-                <div x-show="selected === 3" x-collapse class="px-8 pb-6 text-slate-500 text-sm leading-relaxed">
-                    You can view the complete match schedule, including dates, times, and venues, on our <a href="{{ route('schedule') }}" class="text-primary-500 font-bold underline">Schedule Page</a>.
+            @empty
+                <div class="p-8 rounded-3xl glass dark:glass-dark text-center text-slate-500 italic">
+                    No upcoming friendly matches found.
                 </div>
-            </div>
-
-            <div class="rounded-3xl glass dark:glass-dark border border-white/5 overflow-hidden">
-                <button @click="selected !== 4 ? selected = 4 : selected = null" class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-white/5 transition-colors">
-                    <span class="font-bold">How are the standings calculated?</span>
-                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform" :class="selected === 4 ? 'rotate-180' : ''"></i>
-                </button>
-                <div x-show="selected === 4" x-collapse class="px-8 pb-6 text-slate-500 text-sm leading-relaxed">
-                    Teams earn 3 points for a win, 1 point for a draw, and 0 points for a loss. Tie-breakers include goal difference, goals scored, and head-to-head results.
+            @endforelse
+            @if($upcomingFriendlyMatches->count() > 0)
+                <div class="text-center pt-2">
+                    <a href="{{ route('friendlies') }}" class="text-primary-500 text-xs font-black uppercase tracking-widest hover:underline">View All Friendlies</a>
                 </div>
-            </div>
+            @endif
         </div>
     </section>
 </div>

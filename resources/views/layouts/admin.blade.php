@@ -28,6 +28,10 @@
                     <i data-lucide="settings" class="w-5 h-5"></i>
                     <span class="font-bold">Portal Settings</span>
                 </a>
+                <a href="{{ route('admin.faqs') }}" class="flex items-center space-x-3 p-3 rounded-xl {{ request()->routeIs('admin.faqs') ? 'bg-primary-50 text-primary-600' : 'hover:bg-slate-50 text-slate-500' }}">
+                    <i data-lucide="help-circle" class="w-5 h-5"></i>
+                    <span class="font-bold">Manage FAQs</span>
+                </a>
                 <div class="pt-10">
                     <a href="{{ route('home') }}" class="flex items-center space-x-3 p-3 rounded-xl text-slate-400 hover:text-slate-600">
                         <i data-lucide="external-link" class="w-5 h-5"></i>

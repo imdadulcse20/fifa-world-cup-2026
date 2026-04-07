@@ -14,13 +14,22 @@ class TournamentController extends Controller
     public function home()
     {
         $liveMatches = Game::with(['homeTeam', 'awayTeam', 'stadium'])->where('status', 'live')->get();
-        $upcomingMatches = Game::with(['homeTeam', 'awayTeam', 'stadium'])
+        
+        $upcomingTournamentMatches = Game::with(['homeTeam', 'awayTeam', 'stadium'])
             ->where('status', 'upcoming')
+            ->where('match_type', 'tournament')
             ->orderBy('match_date_utc', 'asc')
             ->take(5)
             ->get();
 
-        return view('home', compact('liveMatches', 'upcomingMatches'));
+        $upcomingFriendlyMatches = Game::with(['homeTeam', 'awayTeam', 'stadium'])
+            ->where('status', 'upcoming')
+            ->where('match_type', 'friendly')
+            ->orderBy('match_date_utc', 'asc')
+            ->take(5)
+            ->get();
+
+        return view('home', compact('liveMatches', 'upcomingTournamentMatches', 'upcomingFriendlyMatches'));
     }
 
     public function schedule(Request $request)
@@ -41,11 +50,15 @@ class TournamentController extends Controller
 
         $allMatches = $query->orderBy('match_date_utc', 'asc')->get();
         
-        $groupedMatches = $allMatches->groupBy(function($item) {
+        $tournamentMatches = $allMatches->where('match_type', 'tournament')->groupBy(function($item) {
             return $item->stage === 'Group Stage' ? $item->group_name : $item->stage;
         });
 
-        return view('schedule', compact('groupedMatches'));
+        $friendlyMatches = $allMatches->where('match_type', 'friendly')->groupBy(function($item) {
+            return 'Friendly Matches';
+        });
+
+        return view('schedule', compact('tournamentMatches', 'friendlyMatches'));
     }
 
     public function matchDetails($id, $slug = null)
@@ -123,5 +136,25 @@ class TournamentController extends Controller
     public function settings()
     {
         return view('settings');
+    }
+
+    public function privacyPolicy()
+    {
+        return view('privacy-policy');
+    }
+
+    public function termsConditions()
+    {
+        return view('terms-conditions');
+    }
+
+    public function contact()
+    {
+        return view('contact');
+    }
+
+    public function about()
+    {
+        return view('about');
     }
 }
