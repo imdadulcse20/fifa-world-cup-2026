@@ -10,7 +10,7 @@ class MatchController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Game::with(['homeTeam', 'awayTeam', 'stadium']);
+        $query = Game::with(['homeTeam', 'awayTeam', 'stadium', 'matchEvents.team']);
 
         if ($request->has('team_id')) {
             $query->where(function($q) use ($request) {

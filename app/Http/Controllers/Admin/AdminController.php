@@ -115,7 +115,9 @@ class AdminController extends Controller
             'stadium_id' => 'required|exists:stadiums,id',
             'match_date_utc' => 'required|date',
             'match_type' => 'required|in:tournament,friendly',
-            'status' => 'required|in:upcoming,live,finished'
+            'status' => 'required|in:upcoming,live,finished',
+            'scraping_url' => 'nullable|url',
+            'external_match_id' => 'nullable|string'
         ]);
 
         Game::create($request->all());
@@ -126,7 +128,11 @@ class AdminController extends Controller
     public function updateMatch(Request $request, $id)
     {
         $match = Game::findOrFail($id);
-        $match->update($request->only(['home_score', 'away_score', 'status']));
+        
+        $data = $request->only(['home_score', 'away_score', 'status', 'external_match_id', 'scraping_url']);
+        $data['is_scraping_active'] = $request->has('is_scraping_active');
+
+        $match->update($data);
 
         if ($match->status === 'finished') {
             $this->updateStandings($match);

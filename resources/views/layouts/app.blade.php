@@ -289,6 +289,86 @@
                     el.textContent = `${date.toLocaleString([], options)} (${formatTimezone(date)})`;
                 }
             });
+
+            // Live Score Auto Update
+            function updateLiveScores() {
+                const liveElements = document.querySelectorAll('[data-live="true"]');
+                if (liveElements.length === 0) return;
+
+                fetch('/api/matches?status=live')
+                    .then(response => response.json())
+                    .then(matches => {
+                        // If a match is no longer live, refresh to move it to finished section
+                        const activeIds = matches.map(m => m.id.toString());
+                        let needsRefresh = false;
+                        
+                        liveElements.forEach(el => {
+                            const id = el.getAttribute('data-match-id');
+                            if (!activeIds.includes(id)) {
+                                needsRefresh = true;
+                            }
+                        });
+
+                        if (needsRefresh) {
+                            window.location.reload();
+                            return;
+                        }
+
+                        matches.forEach(match => {
+                            const el = document.querySelector(`[data-match-id="${match.id}"]`);
+                            if (el) {
+                                // Update Score
+                                const homeScoreEl = el.querySelector('.home-score');
+                                const awayScoreEl = el.querySelector('.away-score');
+                                const scoreBox = el.querySelector('.live-score-box');
+                                
+                                if (homeScoreEl && awayScoreEl) {
+                                    if (homeScoreEl.textContent != match.home_score || awayScoreEl.textContent != match.away_score) {
+                                        homeScoreEl.textContent = match.home_score;
+                                        awayScoreEl.textContent = match.away_score;
+                                        
+                                        if (scoreBox) {
+                                            scoreBox.classList.add('animate-pulse', 'scale-110');
+                                            setTimeout(() => scoreBox.classList.remove('animate-pulse', 'scale-110'), 2000);
+                                        }
+                                    }
+                                }
+
+                                // Update Time/Status
+                                const timeEl = el.querySelector('.match-time-display');
+                                if (timeEl && match.match_time) {
+                                    timeEl.textContent = match.match_time;
+                                }
+
+                                // Update Goal Scorers
+                                const scorersContainer = el.querySelector('.goal-scorers-list');
+                                if (scorersContainer && match.match_events) {
+                                    const goalEvents = match.match_events
+                                        .filter(e => e.type === 'goal')
+                                        .sort((a, b) => a.minute - b.minute);
+                                    
+                                    // Only update if count changed
+                                    if (scorersContainer.children.length !== goalEvents.length) {
+                                        scorersContainer.innerHTML = goalEvents.map(event => `
+                                            <div class="flex items-center justify-center space-x-2 text-[10px] text-slate-500">
+                                                <i data-lucide="goal" class="w-3 h-3 text-primary-500"></i>
+                                                <span class="font-bold">${event.player_name || (event.player ? event.player.name : 'Goal')}</span>
+                                                <span class="text-slate-400 font-medium">${event.minute}'</span>
+                                            </div>
+                                        `).join('');
+                                        if (window.lucide) window.lucide.createIcons();
+                                    }
+                                }
+                            }
+                        });
+                    })
+                    .catch(err => console.error('Error fetching live scores:', err));
+            }
+
+            // Poll every 1 minute
+            if (document.querySelectorAll('[data-live="true"]').length > 0) {
+                setInterval(updateLiveScores, 60000);
+            }
         });
     </script>
 </body>

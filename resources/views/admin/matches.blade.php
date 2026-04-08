@@ -106,6 +106,14 @@
                         <option value="finished">Finished</option>
                     </select>
                 </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black uppercase text-slate-500 ml-2">Scraping URL</label>
+                    <input type="url" name="scraping_url" placeholder="https://example.com/match" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black uppercase text-slate-500 ml-2">External Match ID</label>
+                    <input type="text" name="external_match_id" placeholder="Match ID from website" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-primary-500">
+                </div>
                 <div class="md:col-span-3 lg:col-span-4 pt-4">
                     <button type="submit" class="px-12 py-4 bg-primary-500 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary-500/20 hover:scale-[1.02] transition-all">
                         Create Match
@@ -183,6 +191,9 @@
                             </td>
                             <td class="px-8 py-6 text-right">
                                 <div class="flex items-center justify-end space-x-3">
+                                    <button type="button" onclick="document.getElementById('scraping-{{ $match->id }}').classList.toggle('hidden')" class="p-2 {{ $match->is_scraping_active ? 'text-primary-500' : 'text-slate-400' }} hover:text-primary-500 transition-colors" title="Scraping Configuration">
+                                        <i data-lucide="settings-2" class="w-5 h-5"></i>
+                                    </button>
                                     <a href="{{ route('admin.matches.events', $match->id) }}" class="p-2 text-slate-400 hover:text-primary-500 transition-colors" title="Manage Goal Scorers & Events">
                                         <i data-lucide="list-plus" class="w-5 h-5"></i>
                                     </a>
@@ -192,6 +203,32 @@
                                 </div>
                             </td>
                         </form>
+                    </tr>
+                    <tr id="scraping-{{ $match->id }}" class="hidden bg-slate-50/50 dark:bg-slate-900/40">
+                        <td colspan="6" class="px-8 py-4">
+                            <form action="{{ route('admin.matches.update', $match->id) }}" method="POST">
+                                @csrf
+                                <div class="flex flex-wrap items-end gap-6">
+                                    <div class="space-y-1 flex-1 min-w-[300px]">
+                                        <label class="text-[10px] font-black uppercase text-slate-500 ml-2">Scraping URL</label>
+                                        <input type="url" name="scraping_url" value="{{ $match->scraping_url }}" placeholder="https://example.com/match" class="w-full bg-white dark:bg-slate-800 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-primary-500">
+                                    </div>
+                                    <div class="space-y-1 w-48">
+                                        <label class="text-[10px] font-black uppercase text-slate-500 ml-2">External Match ID</label>
+                                        <input type="text" name="external_match_id" value="{{ $match->external_match_id }}" placeholder="ID" class="w-full bg-white dark:bg-slate-800 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-primary-500">
+                                    </div>
+                                    <div class="flex items-center space-x-3 pb-3">
+                                        <input type="checkbox" name="is_scraping_active" id="active-{{ $match->id }}" {{ $match->is_scraping_active ? 'checked' : '' }} class="w-5 h-5 rounded border-slate-300 text-primary-500 focus:ring-primary-500">
+                                        <label for="active-{{ $match->id }}" class="text-[10px] font-black uppercase text-slate-500">Active Scraping</label>
+                                    </div>
+                                    <div class="pb-1">
+                                        <button type="submit" class="px-6 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all">
+                                            Save Config
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

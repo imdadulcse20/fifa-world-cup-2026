@@ -32,11 +32,12 @@
             <div class="flex space-x-4 overflow-x-auto pb-4 snap-x no-scrollbar">
                 @foreach($liveMatches as $match)
                     <div class="min-w-[300px] snap-center p-6 rounded-[2rem] glass dark:glass-dark border border-white/20 shadow-2xl relative overflow-hidden group cursor-pointer" 
+                         data-match-id="{{ $match->id }}" data-live="true"
                          onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">
                         
                         <div class="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1">
                             <i data-lucide="play" class="w-2 h-2 fill-current"></i>
-                            <span>LIVE</span>
+                            <span class="match-time-display">{{ $match->match_time ?: 'LIVE' }}</span>
                         </div>
                         
                         <div class="flex justify-between items-center mb-6">
@@ -52,10 +53,10 @@
                                 @endif
                             </div>
                             <div class="px-4 flex flex-col items-center">
-                                <div class="text-3xl font-black text-primary-500 flex items-center space-x-2">
-                                    <span>{{ $match->home_score }}</span>
+                                <div class="text-3xl font-black text-primary-500 flex items-center space-x-2 live-score-box">
+                                    <span class="home-score">{{ $match->home_score }}</span>
                                     <span class="text-slate-300 dark:text-slate-700">:</span>
-                                    <span>{{ $match->away_score }}</span>
+                                    <span class="away-score">{{ $match->away_score }}</span>
                                 </div>
                                 <span class="text-[10px] text-slate-500 font-bold mt-2 uppercase">{{ $match->stage }}</span>
                             </div>
@@ -72,9 +73,20 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-center space-x-2 text-slate-500 text-[10px] font-medium">
+                        <div class="flex items-center justify-center space-x-2 text-slate-500 text-[10px] font-medium mb-4">
                             <i data-lucide="map-pin" class="w-3 h-3"></i>
                             <span>{{ $match->stadium->name }}, {{ $match->stadium->city }}</span>
+                        </div>
+
+                        <!-- Goal Scorers Section -->
+                        <div class="border-t border-slate-100 dark:border-slate-800 pt-4 goal-scorers-list space-y-1">
+                            @foreach($match->matchEvents->where('type', 'goal')->sortBy('minute') as $event)
+                                <div class="flex items-center justify-center space-x-2 text-[10px] text-slate-500">
+                                    <i data-lucide="goal" class="w-3 h-3 text-primary-500"></i>
+                                    <span class="font-bold">{{ $event->player_name ?: ($event->player ? $event->player->name : 'Goal') }}</span>
+                                    <span class="text-slate-400 font-medium">{{ $event->minute }}'</span>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 @endforeach

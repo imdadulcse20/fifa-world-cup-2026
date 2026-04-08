@@ -38,12 +38,17 @@
             </div>
 
             <div class="flex flex-col items-center">
-                <div class="text-6xl md:text-8xl font-black flex items-center space-x-4">
-                    <span>{{ $match->home_score }}</span>
+                <div class="text-6xl md:text-8xl font-black flex items-center space-x-4 live-score-box">
+                    <span class="home-score">{{ $match->home_score }}</span>
                     <span class="text-slate-300 dark:text-slate-800">:</span>
-                    <span>{{ $match->away_score }}</span>
+                    <span class="away-score">{{ $match->away_score }}</span>
                 </div>
-                <span class="text-xs font-bold text-slate-500 mt-4 uppercase">Match {{ $match->status }}</span>
+                <div class="flex items-center space-x-2 mt-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Match {{ $match->status }}</span>
+                    @if($match->match_time)
+                        <span class="text-xs font-black text-primary-500 bg-primary-500/10 px-2 py-0.5 rounded-full match-time-display">{{ $match->match_time }}</span>
+                    @endif
+                </div>
             </div>
 
             <div class="flex flex-col items-center space-y-4">
@@ -95,12 +100,12 @@
                             <div class="flex justify-between items-start">
                                 <div>
                                     <span class="text-[10px] font-black uppercase text-primary-500 block mb-1">{{ $event->type }}</span>
-                                    <span class="font-bold">{{ $event->player->name }}</span>
+                                    <span class="font-bold">{{ $event->player_name ?: ($event->player ? $event->player->name : 'Goal') }}</span>
                                     @if($event->details)
                                         <p class="text-xs text-slate-500 mt-1">{{ $event->details }}</p>
                                     @endif
                                 </div>
-                                <span class="text-xs font-medium text-slate-400">{{ $event->team->name }}</span>
+                                <span class="text-xs font-medium text-slate-400">{{ $event->team->name ?? 'Match Event' }}</span>
                             </div>
                         </div>
                     </div>
