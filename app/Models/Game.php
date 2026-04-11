@@ -15,7 +15,7 @@ class Game extends Model
     protected $table = 'matches';
     protected $guarded = [];
 
-    protected $appends = ['slug'];
+    protected $appends = ['slug', 'ground_time', 'ground_date', 'ground_time_full'];
 
     public function getSlugAttribute()
     {
