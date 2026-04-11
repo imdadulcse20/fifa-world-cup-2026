@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\TournamentController;
+use App\Http\Controllers\Web\SitemapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -9,6 +10,7 @@ use App\Http\Controllers\Web\TournamentController;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/', [TournamentController::class, 'home'])->name('home');
 Route::get('/schedule', [TournamentController::class, 'schedule'])->name('schedule');
 Route::get('/match/{slug_id}', [TournamentController::class, 'matchDetails'])->name('match-details');
