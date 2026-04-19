@@ -70,5 +70,23 @@
             <p class="text-slate-500 italic">No international friendly matches scheduled at the moment.</p>
         </div>
     @endif
+
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'The Strategic Importance of Friendlies',
+        'content' => '
+            <p>International friendly matches, often referred to as exhibition games, serve as a vital laboratory for national team managers as they prepare for the ultimate test of the FIFA World Cup™. While these matches do not award points in a tournament standings table, their strategic importance cannot be overstated. They provide the necessary platform for coaches to experiment with tactical formations, integrate new players into the squad, and build the team chemistry that is essential for success on the world stage. For the 2026 World Cup, where the field has expanded to 48 teams, these preparation matches are more crucial than ever.</p>
+            
+            <p>For the elite nations, friendlies are an opportunity to fine-tune their established systems against high-quality opposition. These "heavyweight" matchups often draw massive crowds and provide a glimpse into the potential deep-run contenders of the upcoming tournament. For emerging nations and debutants, friendlies are a chance to gain valuable experience playing against world-class stars, helping them adapt to the speed and physicality of international football. These games allow players to overcome the "stage fright" of representing their country, ensuring they are mentally and physically ready when the first whistle blows in the group stage.</p>
+            
+            <p>The 2026 preparation cycle is unique due to the three-nation hosting arrangement. Many teams are scheduling friendlies in North American cities to acclimate to the local climates, altitudes, and time zones. Playing a match in the humidity of Miami or the high altitude of Mexico City provides invaluable data for sports scientists and coaches. These "warm-up" tours also allow fans in the host nations to see global icons up close, fueling the excitement and anticipation for the main event. A friendly in Toronto or Los Angeles can become a major cultural event, celebrating the global reach of the sport.</p>
+            
+            <p>Tactically, friendlies allow for a degree of experimentation that competitive matches simply do not. A manager might test a new three-man defensive line or try a young attacking prodigy in a high-pressure role. These matches often feature a higher number of substitutions, allowing more squad members to get "minutes in the legs" and prove their worth for a spot in the final 26-man roster. The data gathered from these games—tracking player fitness, pass completion rates, and defensive positioning—is meticulously analyzed to refine the team’s strategy for the World Cup.</p>
+            
+            <p>Our portal tracks these international friendlies with the same dedication as the tournament matches themselves. We provide live scores, lineups, and key events for all major exhibition games involving World Cup contenders. Following these matches allows fans to track their team’s "form curve" and identify the rising stars who might become the breakout players of the tournament. A strong performance in a friendly can shift a nation’s momentum and build the confidence needed to overcome the challenges of a 48-team bracket.</p>
+            
+            <p>Ultimately, international friendlies are a celebration of football’s global community. They bring together nations in a spirit of sportsmanship and mutual respect, providing fans with beautiful moments of skill and passion outside the rigid structure of a competitive season. Whether it’s a historic rivalry renewed in a neutral city or a first-ever meeting between two distant nations, friendlies enrich the international football calendar. As we count down to the 2026 World Cup, these matches are the prologue to what promises to be the greatest story in the history of the beautiful game.</p>
+        '
+    ])
 </div>
 @endsection

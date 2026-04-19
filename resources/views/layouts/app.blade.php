@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $site_settings['app_name'] ?? '2026 World Cup' }} - @yield('title')</title>
     
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpeg') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    
     <script>
         // Inline script to prevent theme flash
         if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -33,8 +36,11 @@
 
     @stack('meta')
 
+    @include('layouts.schema')
+
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
         :root {
             --primary-hex: {{ $site_settings['primary_color'] ?? '#0ea5e9' }};
@@ -54,8 +60,8 @@
     <!-- Navigation (Sidebar Desktop) -->
     <nav class="fixed top-0 left-0 bottom-0 w-20 hidden md:flex flex-col justify-between items-center py-8 glass dark:glass-dark border-r border-white/10 z-[100]">
         <div class="flex flex-col items-center space-y-8">
-            <div class="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20">
-                <span class="text-white font-black text-xl">26</span>
+            <div class="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 overflow-hidden">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="2026 World Cup" class="w-full h-full object-cover">
             </div>
             
             <div class="flex flex-col space-y-6">
@@ -137,8 +143,8 @@
                     <div class="lg:col-span-4 space-y-8">
                         <div class="space-y-4">
                             <a href="{{ route('home') }}" class="inline-flex items-center space-x-3 group">
-                                <div class="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary-500/40 group-hover:rotate-6 transition-transform duration-500">
-                                    <span class="text-white font-black text-xl">26</span>
+                                <div class="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary-500/40 group-hover:rotate-6 transition-transform duration-500 overflow-hidden">
+                                    <img src="{{ asset('images/logo.jpeg') }}" alt="2026 World Cup" class="w-full h-full object-cover">
                                 </div>
                                 <span class="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">
                                     {{ $site_settings['app_name'] ?? 'FWC 2026' }}

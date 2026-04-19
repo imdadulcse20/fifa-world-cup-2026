@@ -114,5 +114,23 @@
             </section>
         </div>
     </div>
+
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'The Identity and Ambition of a Nation',
+        'content' => '
+            <p>Representing a nation in the FIFA World Cup™ is the pinnacle of any footballer’s career, a responsibility that transcends individual achievement and connects directly with the heart of a country’s identity. The "Team Details" page is a tribute to this collective journey, offering a comprehensive look at the squad, its leadership, and the aspirations that drive them on the world stage. In the 2026 tournament, each of the 48 participating teams carries a unique story of qualification, preparation, and the relentless pursuit of excellence that has brought them to the biggest stage in global sports.</p>
+            
+            <p>A national team is more than just a selection of the best players; it is a reflection of a country’s footballing philosophy and cultural spirit. Some teams are defined by their historic "DNA"—the flair of the Brazilians, the tactical discipline of the Germans, or the passionate defensive resilience of the Italians. Others are emerging forces, bringing new energy and innovative approaches to the game. The synergy between the head coach and the players is vital, as they work together to forge a cohesive unit capable of overcoming the diverse challenges presented by a 48-team tournament format.</p>
+            
+            <p>The squad list highlights the incredible depth of talent required to compete at the highest level. From world-renowned superstars who headline global leagues to the "unsung heroes" who provide the tactical stability and work rate necessary for team success, every player has a role to play. The blend of experienced veterans, who provide leadership and composure in high-pressure moments, with young, fearless prospects who bring pace and creativity, is often the hallmark of a successful World Cup campaign. We track these individuals not just as athletes, but as representatives of their communities and ambassadors for their sport.</p>
+            
+            <p>The journey to the 2026 World Cup has been a long and arduous one for every team on this list. Qualification campaigns spanning multiple continents have tested their resolve and consistency over several years. For the host nations—Canada, Mexico, and the United States—the preparation has been focused on building a team that can meet the unique pressure of playing in front of a home crowd. For the visiting nations, the challenge is to adapt to the vast geography and diverse conditions of North America. This preparation involves meticulous planning, from sports science and nutrition to tactical analysis and psychological readiness.</p>
+            
+            <p>FIFA Rankings provide a statistical snapshot of a team’s standing, but the World Cup is the ultimate validator. A nation’s pride is often tied to its team’s performance in this tournament, with a successful run capable of uniting a country and inspiring future generations of players. The "Team Details" page also reflects this historical context, noting past achievements and the best finishes that have defined a nation’s footballing legacy. For some, the goal is to add another star above their crest; for others, it is to reach the knockout rounds for the first time or simply to make their mark on the world stage.</p>
+            
+            <p>As you explore the details of this national team, you are witnessing the result of years of dedication, sacrifice, and passion. The 2026 World Cup is a platform where these teams can write new chapters in their histories, creating moments that will be celebrated for years to come. Whether they are considered favorites or underdogs, every team arrives with the belief that they can achieve something extraordinary. Following their journey through our portal allows you to be part of the emotion and drama that makes international football the most compelling spectacle on Earth.</p>
+        '
+    ])
 </div>
 @endsection

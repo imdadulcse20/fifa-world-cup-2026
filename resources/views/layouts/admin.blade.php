@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - {{ $site_settings['app_name'] ?? 'FWC 2026' }}</title>
     
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpeg') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    
     <script>
         // Inline script to prevent theme flash
         if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -21,8 +24,11 @@
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 hidden md:block">
-            <div class="p-6">
-                <span class="text-xl font-black text-primary-600 uppercase tracking-tighter">Admin Portal</span>
+            <div class="p-6 flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-primary-500/20">
+                    <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <span class="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">Admin Portal</span>
             </div>
             <nav class="mt-6 px-4 space-y-2">
                 @if(auth()->user()->role === 'admin')

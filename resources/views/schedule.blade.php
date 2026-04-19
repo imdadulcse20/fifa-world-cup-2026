@@ -217,5 +217,23 @@
             </div>
         @endforelse
     </div>
+
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'Mastering the 2026 Match Calendar',
+        'content' => '
+            <p>The 2026 FIFA World Cup™ schedule is a masterpiece of logistical planning, designed to accommodate 104 matches across 16 host cities in three vast countries. This expanded schedule ensures that every participating nation has adequate rest between games while maximizing the excitement for fans across multiple time zones. From the opening match at the iconic Estadio Azteca in Mexico City to the final showdown in New Jersey, the calendar is packed with high-stakes football that will keep the world on the edge of its seat for nearly six weeks.</p>
+            
+            <p>One of the most significant changes in the 2026 schedule is the introduction of a new knockout round: the Round of 32. This additional phase means that the journey to the trophy now requires teams to navigate one extra high-pressure match, testing their depth, resilience, and tactical flexibility. The group stage itself will span the first two weeks of the tournament, with up to four matches played daily during peak periods. This dense schedule provides a feast of football for viewers, with games staggered throughout the day to ensure maximum global viewership.</p>
+            
+            <p>Logistically, the host cities have been divided into three geographic regions—West, Central, and East—to minimize travel for teams and fans. This regionalized approach is a crucial component of the schedule, allowing teams to play their group stage matches within a specific cluster of cities. For example, a team might play its matches in Vancouver and Seattle, or Mexico City and Guadalajara. This strategy not only reduces carbon footprints but also allows fans to follow their teams more easily across North America’s diverse landscapes.</p>
+            
+            <p>Kick-off times have been carefully selected to balance local attendance with global broadcasting requirements. Our portal automatically adjusts these times to your local time zone, ensuring you never miss a minute of the action. Whether it’s a morning match in the Pacific Northwest or a late-night thriller on the Atlantic coast, the schedule is designed to be accessible to as many people as possible. We also provide "Ground Time" for each match, giving you a sense of the atmosphere and conditions at the stadium venue itself.</p>
+            
+            <p>As the tournament progresses, the intensity will only increase. The transition from the group stage to the knockout rounds is a pivotal moment in the schedule, where the margin for error disappears. The winners and runners-up from each of the 12 groups, along with the eight best third-placed teams, will find themselves in a bracket where every goal could be the difference between glory and heartbreak. We update the schedule in real-time to reflect these advancing teams, providing a clear path from the group stage to the final match in New York New Jersey.</p>
+            
+            <p>Beyond the official tournament games, the schedule also acknowledges the importance of international friendlies and preparation matches. While these exhibition games don’t impact the official standings, they are vital for managers to fine-tune their squads and for fans to see their favorite stars in action before the main event. Our comprehensive schedule includes these matches, providing a complete picture of the international football calendar leading up to and during the 2026 World Cup. Get ready for an unprecedented summer of football that will define a generation.</p>
+        '
+    ])
 </div>
 @endsection

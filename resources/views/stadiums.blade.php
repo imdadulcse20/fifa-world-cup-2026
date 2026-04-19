@@ -43,5 +43,23 @@
             </div>
         @endforeach
     </div>
+
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'Icons of North American Architecture',
+        'content' => '
+            <p>The 2026 FIFA World Cup™ will be played across 16 world-class venues, each selected for its unique character, advanced technology, and ability to provide a spectacular stage for the beautiful game. These stadiums, spread across Canada, Mexico, and the United States, represent the pinnacle of modern sports architecture and engineering. From historic temples of football with decades of history to state-of-the-art arenas with retractable roofs and innovative sustainability features, the 16 host venues are as diverse as the nations participating in the tournament.</p>
+            
+            <p>In Mexico, the tournament returns to the legendary Estadio Azteca in Mexico City, a stadium that has witnessed some of the greatest moments in football history, including the finals of 1970 and 1986. Joining it are the modern Estadio BBVA in Monterrey and the sleek Estadio Akron in Guadalajara. These Mexican venues provide a passionate and historic atmosphere that is synonymous with Latin American football. The Azteca, in particular, will host the opening match, continuing its legacy as one of the most important and respected stadiums in the world of sport.</p>
+            
+            <p>The United States will host matches in 11 cities, featuring some of the most technologically advanced stadiums on the planet. Venues like SoFi Stadium in Los Angeles, AT&T Stadium in Dallas, and Mercedes-Benz Stadium in Atlanta are marvels of modern design, offering incredible sightlines, massive high-definition screens, and premium fan experiences. Many of these stadiums are home to NFL teams and have been retrofitted to meet FIFAs rigorous standards for pitch quality and spectator comfort. The final will take place at MetLife Stadium in New Jersey, a venue capable of hosting over 80,000 fans in a truly world-class setting.</p>
+            
+            <p>Canada’s contribution to the tournament includes the vibrant BC Place in Vancouver and BMO Field in Toronto. BC Place, with its iconic retractable roof and stunning mountain backdrop, offers one of the most picturesque settings in world football. BMO Field, located in the heart of Toronto, provides an intimate yet electric atmosphere, having been expanded specifically to host the biggest matches. These Canadian venues highlight the country’s growing love for football and its ability to host major international events with style and efficiency.</p>
+            
+            <p>Sustainability and legacy are core themes for the 16 host stadiums. Many venues have implemented innovative water conservation systems, solar power integration, and waste reduction programs to minimize their environmental impact. Beyond the 2026 tournament, these stadiums will continue to serve their communities as hubs for sports, entertainment, and culture. The investment in these facilities ensures that North America will remain a premier destination for global sporting events for decades to come, inspiring future generations of athletes and fans alike.</p>
+            
+            <p>Our stadium guide provides you with all the essential details for each venue, including seat capacity, location, and the specific matches they will host. Whether you are attending a game in person or watching from afar, understanding the "home" for each match adds a deeper layer to your World Cup experience. Every stadium has its own "soul"—the way the sound echoes, the way the light hits the pitch, and the energy of the local crowd. As the world descends on North America, these 16 icons will be the heart of the 2026 World Cup, witnessing the drama and triumph that define the greatest tournament on Earth.</p>
+        '
+    ])
 </div>
 @endsection

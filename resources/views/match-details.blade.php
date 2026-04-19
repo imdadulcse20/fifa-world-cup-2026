@@ -145,32 +145,22 @@
             </div>
         </section>
     </div>
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'The Anatomy of a World Cup Match',
+        'content' => '
+            <p>Every match in the FIFA World Cup™ is more than just a ninety-minute game; it is a high-stakes drama that captures the attention of millions and often defines the sporting legacy of a nation. The "Match Details" page provides a microscopic view of these epic encounters, tracking every goal, card, and substitution that shapes the final outcome. In the 2026 edition, with its expanded format and new Round of 32, the weight of each match has only intensified. A single moment of brilliance or a momentary lapse in concentration can be the difference between moving one step closer to the trophy or a heartbreaking exit from the tournament.</p>
+            
+            <p>The technical aspects of a World Cup match are a fascinating study for any football enthusiast. Modern matches are a blend of peak physical athleticism and complex tactical systems. Coaches spend months, even years, analyzing their opponents to identify weaknesses and develop strategies that can exploit them. Whether it is a high-pressing game designed to force turnovers in the opponent’s half or a deep-sitting defensive block aimed at neutralizing a world-class attacker, the tactical battles unfolding on the pitch are as compelling as the goals themselves. Our timeline captures these shifts in momentum, providing a narrative of how the match evolved from the first whistle to the last.</p>
+            
+            <p>Beyond the tactics, the emotional atmosphere of a World Cup match is unparalleled. The pressure on the players representing their countries is immense, with the hopes and dreams of millions resting on their shoulders. This pressure often brings out the best in the world’s greatest stars, leading to the "clutch" performances that become part of football folklore. The roar of the crowd in a stadium like the Azteca or the MetLife, the tension during a VAR review, and the pure elation of a late winner are all part of the unique experience that only the World Cup can provide. These matches are where national icons are forged and where the history of the sport is written in real-time.</p>
+            
+            <p>The significance of a match also extends to its impact on the tournament’s standings and the subsequent knockout bracket. In the group stage, a win provides the necessary points to secure a top-two finish, while a draw might be enough to stay in contention for one of the eight best third-placed slots. As we move into the knockout rounds, the matches become "all or nothing," where the specter of extra time and penalty shootouts looms over every play. The psychological resilience required to succeed in these "win or go home" scenarios is what separates the champions from the rest of the field.</p>
+            
+            <p>Our match details page also highlights the importance of the venue and the officials in the outcome of the game. The stadium’s pitch conditions, weather, and even the local altitude in cities like Mexico City can significantly affect player performance and match strategy. The referee and the VAR team also play a critical role, ensuring that the rules of the game are upheld and that key decisions are made with the highest degree of accuracy possible. We provide this context to give you a complete understanding of why a match unfolded the way it did, looking beyond just the final scoreline.</p>
+            
+            <p>Ultimately, a World Cup match is a celebration of humanity’s shared love for the beautiful game. It is a moment where people from different cultures, languages, and backgrounds come together to witness a display of skill, passion, and sporting excellence. As you explore the details of this match, remember that you are looking at a piece of history—a ninety-minute story that will be told and retold by fans for decades to come. Whether it is a group stage thriller or a knockout classic, every match in the 2026 World Cup is a vital chapter in the greatest sporting story ever told.</p>
+        '
+    ])
 </div>
-
-{{-- JSON-LD Structured Data for SportsEvent --}}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SportsEvent",
-  "name": "{{ ($match->homeTeam ? $match->homeTeam->name : $match->home_team_placeholder) }} vs {{ ($match->awayTeam ? $match->awayTeam->name : $match->away_team_placeholder) }}",
-  "startDate": "{{ \Carbon\Carbon::parse($match->match_date_utc)->toIso8601String() }}",
-  "location": {
-    "@type": "Place",
-    "name": "{{ $match->stadium->name }}",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "{{ $match->stadium->city }}"
-    }
-  },
-  "homeTeam": {
-    "@type": "SportsTeam",
-    "name": "{{ $match->homeTeam ? $match->homeTeam->name : $match->home_team_placeholder }}"
-  },
-  "awayTeam": {
-    "@type": "SportsTeam",
-    "name": "{{ $match->awayTeam ? $match->awayTeam->name : $match->away_team_placeholder }}"
-  },
-  "eventStatus": "https://schema.org/{{ $match->status === 'finished' ? 'EventPostponed' : ($match->status === 'live' ? 'EventScheduled' : 'EventScheduled') }}"
-}
-</script>
 @endsection

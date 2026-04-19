@@ -235,6 +235,22 @@
                 </div>
             @endif
         </div>
-    </section>
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'The Road to 2026: A Historic Tournament',
+        'content' => '
+            <p>The FIFA World Cup 2026™ is set to be the most ambitious and expansive sporting event ever organized. For the first time in history, the tournament will feature 48 teams, an increase from the 32-team format that has been in place since 1998. This expansion reflects FIFAs commitment to making the World Cup a truly global celebration, offering more opportunities for nations from every corner of the earth to compete on the grandest stage of all. With more teams comes more matches, more goals, and more unforgettable moments that will be etched into the collective memory of football fans worldwide.</p>
+            
+            <p>This edition is also unique for its hosting arrangement. Canada, Mexico, and the United States will co-host the tournament across 16 iconic cities. This three-nation collaboration demonstrates the unifying power of football, bringing together different cultures and communities under a shared passion for the beautiful game. From the high-altitude stadiums of Mexico City to the modern arenas of the United States and the vibrant coastal cities of Canada, the 2026 World Cup will showcase the incredible diversity and hospitality of North America.</p>
+            
+            <p>The new tournament structure will consist of 12 groups of four teams each. The top two teams from each group, along with the eight best third-placed teams, will advance to a new Round of 32, marking the beginning of a high-stakes knockout phase. This format ensures that every match in the group stage carries significant weight, providing fans with non-stop excitement from the opening whistle to the final trophy presentation. A total of 104 matches will be played over 39 days, culminating in the final at MetLife Stadium in East Rutherford, New Jersey.</p>
+            
+            <p>Beyond the pitch, the 2026 World Cup aims to leave a lasting legacy. It is expected to generate unprecedented economic growth, promote tourism, and inspire a new generation of footballers across the host nations and beyond. The tournament will also prioritize sustainability and inclusivity, setting new standards for how major international events are conducted in the 21st century. Whether you are a lifelong supporter or a newcomer to the sport, the 2026 World Cup promises to be a spectacle of skill, drama, and pure emotion that you wont want to miss.</p>
+            
+            <p>Our portal is designed to be your ultimate companion throughout this journey. We provide real-time updates on live scores, detailed match schedules, up-to-the-minute group standings, and comprehensive team profiles. Stay tuned for the latest news, injury updates, and tactical analyses as we count down to the kick-off of the greatest show on Earth. The beautiful game is coming to North America, and we are here to ensure you dont miss a single beat of the action.</p>
+            
+            <p>As the teams prepare and the host cities finalize their preparations, the excitement is palpable. Fans from around the globe are already planning their travels, looking forward to experiencing the unique atmosphere that only a World Cup can provide. The 2026 tournament is not just about the matches; it is about the stories of the players, the chants in the stands, and the shared joy of a goal that unites people across borders. It is a celebration of humanity, resilience, and the relentless pursuit of excellence that defines the spirit of football.</p>
+        '
+    ])
 </div>
 @endsection

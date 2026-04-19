@@ -52,5 +52,23 @@
             </div>
         </section>
     @endforeach
+
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'A Global Showcase of 48 Nations',
+        'content' => '
+            <p>The 2026 FIFA World Cup™ features an unprecedented gathering of 48 national teams, making it the most inclusive and diverse edition of the tournament since its inception in 1930. This expansion from the traditional 32-team format allows for a broader representation of global football talent, bringing more nations from Africa, Asia, North America, South America, Oceania, and Europe into the spotlight. The "Teams" section of our portal is your gateway to exploring the stories, squads, and ambitions of these 48 contenders as they vie for the most coveted trophy in sports.</p>
+            
+            <p>Each participating nation brings its own unique footballing heritage and cultural identity to the tournament. From the rhythmic flair of South American giants to the disciplined tactical prowess of European powerhouses, the variety of playing styles on display is staggering. The expansion particularly benefits emerging football regions, providing a platform for smaller nations to test themselves against the world’s best. This creates a fascinating dynamic where established legends of the game meet rising stars and spirited underdogs, ensuring that every group is a melting pot of styles and stories.</p>
+            
+            <p>Host nations Canada, Mexico, and the United States qualify automatically, each carrying the weight of home expectations. Mexico, as a two-time host, brings its rich World Cup history and the iconic Estadio Azteca into the fold. The United States, having seen massive growth in the sport since 1994, aims to leverage its world-class facilities and passionate home support. Canada, making its third appearance, represents the growing North American interest in the beautiful game. Together, these hosts provide the backdrop for 45 other nations to chase their dreams across the continent.</p>
+            
+            <p>Individual team profiles on our site provide a deep dive into each squad’s composition. From the experienced veterans who have seen it all to the young prodigies making their debut on the world stage, we track every player’s journey. You can find detailed information on head coaches and their tactical philosophies, as well as recent form and historical performance data. Understanding the "human element" of each team—the sacrifices, the triumphs, and the collective spirit—is what makes following the World Cup so compelling for millions of fans worldwide.</p>
+            
+            <p>FIFA Rankings offer a glimpse into the perceived strength of each team, but as every football fan knows, the World Cup is where rankings often get thrown out the window. The tournament is famous for its "giant-killers" and "Cinderella stories," where a supposedly lesser team finds the inspiration to defeat a global superpower. Our portal tracks these shifts in real-time, reflecting how tournament performance impacts a nation’s standing in the world of football. Whether a team is ranked #1 or #48, their potential for greatness is what keeps us watching every single match.</p>
+            
+            <p>As the teams navigate the group stage and hopefully progress into the knockout rounds, their stories will evolve. New heroes will emerge, records will be broken, and national icons will be forged in the heat of competition. Following the 48 teams of the 2026 World Cup is more than just following sports; it is about witnessing the heartbeat of nations and the universal language of football. We are committed to providing you with the most comprehensive and engaging team data to ensure you are part of every goal, every save, and every celebration throughout this historic event.</p>
+        '
+    ])
 </div>
 @endsection

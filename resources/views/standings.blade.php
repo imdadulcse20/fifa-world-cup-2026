@@ -107,5 +107,23 @@
             <span>ADVANCING TO ROUND OF 32</span>
         </div>
     </section>
+
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'Understanding the New Standing Dynamics',
+        'content' => '
+            <p>The 2026 FIFA World Cup™ introduces a transformative group stage format that redefines how teams qualify for the knockout rounds. With 48 teams competing in 12 groups of four, the standings tables are more dynamic and critical than ever before. Every goal scored, every clean sheet kept, and every card received can have a profound impact on a team’s destiny. In this new era, the race to the top of the group is just the beginning, as the qualifying criteria have expanded to include more opportunities and more complexity.</p>
+            
+            <p>The core rules of the standings remain familiar: three points for a win, one for a draw, and zero for a loss. However, with the introduction of 12 groups, the competition for the Round of 32 becomes a multi-layered challenge. While the top two teams from each group automatically advance, the true drama often lies in the "best third-placed" rankings. This "tournament within a tournament" compares the third-placed teams from all 12 groups, with the top eight advancing. This means that even a team that starts slowly can still find a path to glory if they finish their group stage strongly.</p>
+            
+            <p>Tie-breakers play a crucial role in the standings when teams finish level on points. The primary tie-breaker remains goal difference in all group matches, followed by the total number of goals scored. If teams are still level, their head-to-head record is consulted. This hierarchy ensures that attacking football is rewarded, as scoring more goals can often be the deciding factor between advancing or going home. In the rare event that teams are still tied after these criteria, fair play points—calculated based on yellow and red cards—are used as a final sporting measure before a random draw is required.</p>
+            
+            <p>Our real-time standings table is designed to keep you informed of these shifting dynamics as they happen. As live matches progress, the "as-it-stands" rankings update with every goal, allowing you to see which teams are currently in a qualifying position. This is particularly exciting during the final matches of each group, often played simultaneously, where a single goal in one stadium can send a team three cities away into the next round. The drama of the "live table" is one of the most thrilling aspects of the World Cup group stage.</p>
+            
+            <p>The expansion to 48 teams also means that more confederations have more representatives, leading to a greater variety of playing styles and matchups in the standings. Fans will see historic giants of the game competing in the same tables as emerging nations making their first-ever appearances. This diversity enriches the tournament and makes the standings a fascinating study of global football progress. Whether a team is a perennial favorite or a spirited underdog, their journey is captured perfectly in the numbers and rankings of our standings section.</p>
+            
+            <p>As we transition into the knockout phases, the standings serve as the foundation for the Round of 32 bracket. The positioning in the group determines a team’s potential path through the tournament, including which geographic regions they will play in and which opponents they might face. Understanding the standings is therefore essential for any fan who wants to predict the eventual champion. From Group A to Group L, every position matters, every point is precious, and every moment is part of the unfolding story of the greatest World Cup ever held.</p>
+        '
+    ])
 </div>
 @endsection

@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - 2026 World Cup</title>
+    
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpeg') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body class="bg-slate-900 flex items-center justify-center min-h-screen p-6">
     <div class="max-w-md w-full">
         <div class="text-center mb-10">
-            <div class="w-20 h-20 bg-primary-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-primary-500/20 mx-auto mb-6">
-                <span class="text-white font-black text-4xl">26</span>
+            <div class="w-20 h-20 bg-primary-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-primary-500/20 mx-auto mb-6 overflow-hidden">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="2026 World Cup" class="w-full h-full object-cover">
             </div>
             <h1 class="text-2xl font-black text-white">FIFA World Cup 2026</h1>
             <p class="text-slate-500 text-sm font-bold uppercase tracking-widest mt-2">Admin Portal Access</p>

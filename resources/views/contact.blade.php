@@ -59,5 +59,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Page Description -->
+    @include('layouts.page-description', [
+        'title' => 'Building a Global Football Community',
+        'content' => '
+            <p>At the heart of our 2026 World Cup portal is a commitment to building a vibrant and engaged global football community. We believe that the fans are the lifeblood of the sport, and your feedback is essential in helping us create a platform that truly serves the needs of the international football family. The "Contact Us" page is more than just a form; it is a direct line of communication between our team and the millions of fans who share our passion for the beautiful game. Every message we receive is an opportunity for us to learn, improve, and better celebrate the historic event that is the 2026 FIFA World Cup™.</p>
+            
+            <p>Our philosophy is rooted in transparency and responsiveness. Whether you have a technical question about our live score updates, a suggestion for a new feature, or simply want to share your excitement for your national team, we are here to listen. We understand that in the fast-paced world of international sports, accuracy and reliability are paramount. If you spot a discrepancy in our match data or have an inquiry about our stadium guides, your input allows us to maintain the high standards that our users expect. By working together with our community, we can ensure that our portal remains the most trusted and comprehensive resource for World Cup enthusiasts everywhere.</p>
+            
+            <p>Beyond technical support, we are eager to hear your stories. The World Cup is a tapestry of personal experiences—the journey to a host city, the joy of a last-minute goal, and the shared camaraderie of fans from different nations. We encourage you to use this contact channel to share how the 2026 tournament is impacting your community. Are you part of a local supporters\' club? Are you a volunteer at one of the 16 host venues? Your unique perspective enriches our understanding of the tournament’s global impact and helps us highlight the "human side" of the World Cup that often goes unnoticed by mainstream media.</p>
+            
+            <p>We also welcome inquiries regarding partnerships and collaborations. As we count down to 2026, we are always looking for ways to work with other organizations, content creators, and community leaders who share our vision for a more inclusive and engaged football world. If you have a proposal for a joint project, a sponsorship inquiry, or a media request, our dedicated team is ready to explore how we can work together to amplify the message of the 2026 World Cup. We believe that by pooling our resources and creativity, we can create experiences that are far greater than the sum of their parts.</p>
+            
+            <p>Our commitment to you extends beyond the duration of the tournament. We aim to build a platform that remains a hub for international football long after the final whistle has blown in 2026. Your long-term feedback helps us plan for the future, ensuring that we continue to evolve alongside the sport and its fans. We are constantly exploring new technologies, from interactive data visualizations to community-driven content sections, and your input is the compass that guides our development roadmap. We are building this for you, and we want you to be part of every step of the journey.</p>
+            
+            <p>In conclusion, thank you for being a part of our community. Your passion, your expertise, and your feedback are what drive us to excellence every single day. As we prepare for the biggest sporting event in history, we look forward to hearing from you and working together to make the 2026 World Cup an unforgettable experience for everyone. Whether you are reaching out from a bustling host city in Mexico or a quiet village thousands of miles away, your voice matters to us. Let’s keep the conversation going and celebrate the unifying power of football together.</p>
+        '
+    ])
 </div>
 @endsection
