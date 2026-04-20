@@ -134,10 +134,6 @@ class AdminController extends Controller
 
         $match->update($data);
 
-        if ($match->status === 'finished') {
-            $this->updateStandings($match);
-        }
-
         return back()->with('success', 'Match updated successfully!');
     }
 
@@ -194,53 +190,19 @@ class AdminController extends Controller
         return back()->with('success', 'Settings updated successfully!');
     }
 
-    private function updateStandings($match)
+    public function standings()
     {
-        // Simple logic: Reset and Recalculate for the two teams
-        // In a production app, we'd recalculate the whole group to be safe
-        $this->syncTeamStanding($match->home_team_id);
-        $this->syncTeamStanding($match->away_team_id);
+        $groups = Standing::with('team')->get()->groupBy('group_name')->sortKeys();
+        return view('admin.standings', compact('groups'));
     }
 
-    private function syncTeamStanding($teamId)
+    public function recalculateStandings()
     {
-        $team = Team::find($teamId);
-        $matches = Game::where('status', 'finished')
-            ->where(function($q) use ($teamId) {
-                $q->where('home_team_id', $teamId)->orWhere('away_team_id', $teamId);
-            })->get();
-
-        $stats = [
-            'played' => 0, 'won' => 0, 'drawn' => 0, 'lost' => 0,
-            'goals_for' => 0, 'goals_against' => 0, 'points' => 0
-        ];
-
-        foreach ($matches as $m) {
-            $stats['played']++;
-            $isHome = $m->home_team_id == $teamId;
-            $teamScore = $isHome ? $m->home_score : $m->away_score;
-            $oppScore = $isHome ? $m->away_score : $m->home_score;
-
-            $stats['goals_for'] += $teamScore;
-            $stats['goals_against'] += $oppScore;
-
-            if ($teamScore > $oppScore) {
-                $stats['won']++;
-                $stats['points'] += 3;
-            } elseif ($teamScore == $oppScore) {
-                $stats['drawn']++;
-                $stats['points'] += 1;
-            } else {
-                $stats['lost']++;
-            }
+        $teams = Team::all();
+        foreach ($teams as $team) {
+            // Use the centralized method from Game model
+            Game::syncTeamStanding($team->id);
         }
-
-        Standing::updateOrCreate(
-            ['team_id' => $teamId],
-            array_merge($stats, [
-                'group_name' => $team->group_name,
-                'goal_difference' => $stats['goals_for'] - $stats['goals_against']
-            ])
-        );
+        return back()->with('success', 'Point table recalculated successfully!');
     }
 }

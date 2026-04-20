@@ -148,12 +148,12 @@
                     <div class="flex items-center space-x-4 flex-1">
                         @if($match->homeTeam)
                             <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">
-                            <span class="font-bold text-sm truncate max-w-[80px]">{{ $match->homeTeam->name }}</span>
+                            <span class="font-bold text-sm">{{ $match->homeTeam->name }}</span>
                         @else
                             <div class="w-8 h-5 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center text-slate-400">
                                 <i data-lucide="users" class="w-3 h-3"></i>
                             </div>
-                            <span class="font-bold text-[10px] truncate max-w-[80px] text-slate-500 uppercase">{{ $match->home_team_placeholder }}</span>
+                            <span class="font-bold text-[10px] text-slate-500 uppercase">{{ $match->home_team_placeholder }}</span>
                         @endif
                     </div>
                     
@@ -166,10 +166,10 @@
 
                     <div class="flex items-center justify-end space-x-4 flex-1">
                         @if($match->awayTeam)
-                            <span class="font-bold text-sm truncate max-w-[80px] text-right">{{ $match->awayTeam->name }}</span>
+                            <span class="font-bold text-sm text-right">{{ $match->awayTeam->name }}</span>
                             <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">
                         @else
-                            <span class="font-bold text-[10px] truncate max-w-[80px] text-right text-slate-500 uppercase">{{ $match->away_team_placeholder }}</span>
+                            <span class="font-bold text-[10px] text-right text-slate-500 uppercase">{{ $match->away_team_placeholder }}</span>
                             <div class="w-8 h-5 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center text-slate-400">
                                 <i data-lucide="users" class="w-3 h-3"></i>
                             </div>
@@ -196,12 +196,12 @@
                     <div class="flex items-center space-x-4 flex-1">
                         @if($match->homeTeam)
                             <img src="{{ asset($match->homeTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">
-                            <span class="font-bold text-sm truncate max-w-[80px]">{{ $match->homeTeam->name }}</span>
+                            <span class="font-bold text-sm">{{ $match->homeTeam->name }}</span>
                         @else
                             <div class="w-8 h-5 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center text-slate-400">
                                 <i data-lucide="users" class="w-3 h-3"></i>
                             </div>
-                            <span class="font-bold text-[10px] truncate max-w-[80px] text-slate-500 uppercase">{{ $match->home_team_placeholder }}</span>
+                            <span class="font-bold text-[10px] text-slate-500 uppercase">{{ $match->home_team_placeholder }}</span>
                         @endif
                     </div>
                     
@@ -214,10 +214,10 @@
 
                     <div class="flex items-center justify-end space-x-4 flex-1">
                         @if($match->awayTeam)
-                            <span class="font-bold text-sm truncate max-w-[80px] text-right">{{ $match->awayTeam->name }}</span>
+                            <span class="font-bold text-sm text-right">{{ $match->awayTeam->name }}</span>
                             <img src="{{ asset($match->awayTeam->flag_url) }}" class="w-8 h-5 object-cover rounded shadow-sm" alt="">
                         @else
-                            <span class="font-bold text-[10px] truncate max-w-[80px] text-right text-slate-500 uppercase">{{ $match->away_team_placeholder }}</span>
+                            <span class="font-bold text-[10px] text-right text-slate-500 uppercase">{{ $match->away_team_placeholder }}</span>
                             <div class="w-8 h-5 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center text-slate-400">
                                 <i data-lucide="users" class="w-3 h-3"></i>
                             </div>

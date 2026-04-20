@@ -20,8 +20,26 @@ class TournamentController extends Controller
             ->where('status', 'upcoming')
             ->where('match_type', 'tournament')
             ->orderBy('match_date_utc', 'asc')
-            ->take(5)
-            ->get();
+            ->get()
+            ->groupBy(function($item) {
+                return $item->stage === 'Group Stage' ? $item->group_name : $item->stage;
+            })
+            ->sortBy(function($matches, $key) {
+                if (str_starts_with($key, 'Group')) {
+                    return $key;
+                }
+                $weights = [
+                    'Round of 32' => 'M1',
+                    'Round of 16' => 'M2',
+                    'Quarter-finals' => 'M3',
+                    'Semi-finals' => 'M4',
+                    'Third-place Match' => 'M5',
+                    'Final' => 'M6',
+                ];
+                return $weights[$key] ?? 'ZZ';
+            })
+            ->flatten()
+            ->take(5);
 
         $upcomingFriendlyMatches = Game::with(['homeTeam', 'awayTeam', 'stadium'])
             ->where('status', 'upcoming')
@@ -53,6 +71,22 @@ class TournamentController extends Controller
         
         $tournamentMatches = $allMatches->where('match_type', 'tournament')->groupBy(function($item) {
             return $item->stage === 'Group Stage' ? $item->group_name : $item->stage;
+        })->sortBy(function($matches, $key) {
+            // Assign weights for sorting
+            if (str_starts_with($key, 'Group')) {
+                return $key; // Group A, Group B etc will sort alphabetically
+            }
+            
+            $weights = [
+                'Round of 32' => 'M1',
+                'Round of 16' => 'M2',
+                'Quarter-finals' => 'M3',
+                'Semi-finals' => 'M4',
+                'Third-place Match' => 'M5',
+                'Final' => 'M6',
+            ];
+
+            return $weights[$key] ?? 'ZZ';
         });
 
         $friendlyMatches = $allMatches->where('match_type', 'friendly')->groupBy(function($item) {
@@ -84,7 +118,7 @@ class TournamentController extends Controller
 
     public function standings()
     {
-        $allStandings = Standing::with('team')->get()->groupBy('group_name');
+        $allStandings = Standing::with('team')->get()->groupBy('group_name')->sortKeys();
         
         $thirdPlacedTeams = collect();
 
@@ -112,7 +146,7 @@ class TournamentController extends Controller
 
     public function teams()
     {
-        $teams = Team::all()->groupBy('group_name');
+        $teams = Team::all()->groupBy('group_name')->sortKeys();
         return view('teams', compact('teams'));
     }
 

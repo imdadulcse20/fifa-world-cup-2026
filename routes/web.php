@@ -48,6 +48,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,faq_mana
         Route::get('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'matchEvents'])->name('matches.events');
         Route::post('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'storeMatchEvent'])->name('matches.events.store');
         Route::delete('/events/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteMatchEvent'])->name('matches.events.delete');
+        
+        Route::get('/standings', [App\Http\Controllers\Admin\AdminController::class, 'standings'])->name('standings');
+        Route::post('/standings/recalculate', [App\Http\Controllers\Admin\AdminController::class, 'recalculateStandings'])->name('standings.recalculate');
+
         Route::get('/settings', [App\Http\Controllers\Admin\AdminController::class, 'settings'])->name('settings');
         Route::post('/settings', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('settings.update');
     });

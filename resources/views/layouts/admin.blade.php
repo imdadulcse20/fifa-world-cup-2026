@@ -40,6 +40,10 @@
                     <i data-lucide="calendar" class="w-5 h-5"></i>
                     <span class="font-bold">Manage Matches</span>
                 </a>
+                <a href="{{ route('admin.standings') }}" class="flex items-center space-x-3 p-3 rounded-xl {{ request()->routeIs('admin.standings') ? 'bg-primary-50 text-primary-600' : 'hover:bg-slate-50 text-slate-500' }}">
+                    <i data-lucide="list-ordered" class="w-5 h-5"></i>
+                    <span class="font-bold">Point Table</span>
+                </a>
                 <a href="{{ route('admin.settings') }}" class="flex items-center space-x-3 p-3 rounded-xl {{ request()->routeIs('admin.settings') ? 'bg-primary-50 text-primary-600' : 'hover:bg-slate-50 text-slate-500' }}">
                     <i data-lucide="settings" class="w-5 h-5"></i>
                     <span class="font-bold">Portal Settings</span>
