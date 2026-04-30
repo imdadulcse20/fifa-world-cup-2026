@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @if(config('services.google.analytics_id'))
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google.analytics_id') }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ config('services.google.analytics_id') }}');
+    </script>
+    @endif
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $site_settings['app_name'] ?? '2026 World Cup' }} - @yield('title')</title>
     
     <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpeg') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="{{ $site_settings['primary_color'] ?? '#0ea5e9' }}">
     
     <script>
         // Inline script to prevent theme flash
@@ -69,14 +81,68 @@
                 @include('layouts.nav-item', ['route' => 'schedule', 'icon' => 'calendar', 'label' => 'Matches'])
                 @include('layouts.nav-item', ['route' => 'standings', 'icon' => 'trophy', 'label' => 'Standings'])
                 @include('layouts.nav-item', ['route' => 'teams', 'icon' => 'users', 'label' => 'Teams'])
+                @include('layouts.nav-item', ['route' => 'search', 'icon' => 'search', 'label' => 'Search'])
                 @include('layouts.nav-item', ['route' => 'friendlies', 'icon' => 'flag', 'label' => 'Friendlies'])
             </div>
         </div>
 
-        <button x-data @click="toggleTheme()" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-all hover:scale-110 active:scale-95 shadow-lg border border-slate-200 dark:border-slate-800">
-            <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
-            <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
-        </button>
+        <div class="flex flex-col space-y-4">
+            <!-- Notifications (Desktop) -->
+            @auth
+            <div x-data="{ 
+                open: false, 
+                notifications: [], 
+                unreadCount: 0,
+                fetchNotifications() {
+                    fetch('/api/notifications')
+                        .then(res => res.json())
+                        .then(data => {
+                            this.notifications = data;
+                            this.unreadCount = data.length;
+                        });
+                },
+                markRead() {
+                    fetch('/api/notifications/read', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
+                        .then(() => {
+                            this.unreadCount = 0;
+                            this.notifications = [];
+                        });
+                }
+            }" x-init="fetchNotifications(); setInterval(() => fetchNotifications(), 30000)" class="relative">
+                <button @click="open = !open; if(open) markRead()" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-all hover:scale-110 active:scale-95 shadow-lg border border-slate-200 dark:border-slate-800 relative">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <template x-if="unreadCount > 0">
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-slate-950" x-text="unreadCount"></span>
+                    </template>
+                </button>
+
+                <div x-show="open" @click.away="open = false" class="absolute left-full ml-4 bottom-0 w-80 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-[200]">
+                    <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                        <h3 class="font-black text-xs uppercase tracking-widest">Notifications</h3>
+                    </div>
+                    <div class="max-h-96 overflow-y-auto no-scrollbar">
+                        <template x-if="notifications.length === 0">
+                            <div class="p-10 text-center space-y-3">
+                                <i data-lucide="bell-off" class="w-8 h-8 text-slate-300 mx-auto"></i>
+                                <p class="text-xs text-slate-500 font-bold">All caught up!</p>
+                            </div>
+                        </template>
+                        <template x-for="notif in notifications" :key="notif.id">
+                            <div class="p-6 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                                <p class="text-[10px] font-black text-primary-500 uppercase tracking-tighter mb-1" x-text="notif.data.title"></p>
+                                <p class="text-sm font-bold text-slate-700 dark:text-slate-200" x-text="notif.data.message"></p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            @endauth
+
+            <button x-data @click="toggleTheme()" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-all hover:scale-110 active:scale-95 shadow-lg border border-slate-200 dark:border-slate-800">
+                <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
+                <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
+            </button>
+        </div>
     </nav>
 
     <!-- Mobile Bottom Nav -->
@@ -85,7 +151,7 @@
         @include('layouts.nav-item', ['route' => 'schedule', 'icon' => 'calendar', 'label' => 'Matches'])
         @include('layouts.nav-item', ['route' => 'standings', 'icon' => 'trophy', 'label' => 'Standings'])
         @include('layouts.nav-item', ['route' => 'teams', 'icon' => 'users', 'label' => 'Teams'])
-        @include('layouts.nav-item', ['route' => 'friendlies', 'icon' => 'flag', 'label' => 'Friendlies'])
+        @include('layouts.nav-item', ['route' => 'search', 'icon' => 'search', 'label' => 'Search'])
     </nav>
 
     <!-- Main Content Wrapper -->
@@ -303,7 +369,10 @@
 
                 fetch('/api/matches?status=live')
                     .then(response => response.json())
-                    .then(matches => {
+                    .then(json => {
+                        const matches = json.data;
+                        if (!matches) return;
+
                         // If a match is no longer live, refresh to move it to finished section
                         const activeIds = matches.map(m => m.id.toString());
                         let needsRefresh = false;
@@ -376,6 +445,14 @@
                 setInterval(updateLiveScores, 60000);
             }
         });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service worker registered.', reg))
+                    .catch(err => console.log('Service worker registration failed:', err));
+            });
+        }
     </script>
 </body>
 </html>

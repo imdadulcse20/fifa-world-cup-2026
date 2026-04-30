@@ -22,6 +22,15 @@
                 @foreach($groupTeams as $team)
                     <div class="p-6 rounded-[2.5rem] glass dark:glass-dark border border-white/10 flex flex-col space-y-4 hover:scale-[1.02] transition-all cursor-pointer group shadow-lg relative overflow-hidden"
                          onclick="window.location='{{ route('team-details', $team->id) }}'">
+                        
+                        <!-- Favorite Button -->
+                        <form action="{{ route('teams.favorite', $team->id) }}" method="POST" class="absolute top-4 left-6 z-10" onclick="event.stopPropagation()">
+                            @csrf
+                            <button type="submit" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-all group/fav">
+                                <i data-lucide="star" class="w-4 h-4 {{ in_array($team->id, $favoriteTeamIds) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-400' }} group-hover/fav:scale-110 transition-transform"></i>
+                            </button>
+                        </form>
+
                         <!-- Ranking Badge -->
                         <div class="absolute top-4 right-6 flex flex-col items-end">
                             <span class="text-[10px] font-black text-slate-500 uppercase">FIFA RANK</span>

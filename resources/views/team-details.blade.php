@@ -19,7 +19,15 @@
                 <img src="{{ asset($team->flag_url) }}" class="w-32 h-20 md:w-48 md:h-32 object-cover rounded-3xl shadow-2xl border-4 border-white/10" alt="">
                 <div class="space-y-2">
                     <span class="text-xs font-black uppercase tracking-[0.3em] text-primary-500">{{ $team->group_name }}</span>
-                    <h1 class="text-4xl md:text-6xl font-black">{{ $team->name }}</h1>
+                    <div class="flex items-center space-x-4">
+                        <h1 class="text-4xl md:text-6xl font-black">{{ $team->name }}</h1>
+                        <form action="{{ route('teams.favorite', $team->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group/fav">
+                                <i data-lucide="star" class="w-6 h-6 {{ $isFavorited ? 'fill-yellow-400 text-yellow-400' : 'text-slate-400' }} group-hover/fav:scale-110 transition-transform"></i>
+                            </button>
+                        </form>
+                    </div>
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-full">
                             <i data-lucide="user" class="w-3 h-3 text-slate-400"></i>

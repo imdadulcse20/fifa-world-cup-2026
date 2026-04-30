@@ -139,8 +139,45 @@ class AdminController extends Controller
 
     public function matchEvents($id)
     {
-        $match = Game::with(['homeTeam.players', 'awayTeam.players', 'matchEvents.player', 'matchEvents.team'])->findOrFail($id);
+        $match = Game::with(['homeTeam.players', 'awayTeam.players', 'matchEvents.player', 'matchEvents.team', 'stats'])->findOrFail($id);
+        
+        // Ensure stats record exists
+        if (!$match->stats) {
+            \App\Models\MatchStat::create(['match_id' => $id]);
+            $match->refresh();
+        }
+
         return view('admin.match-events', compact('match'));
+    }
+
+    public function updateMatchStats(Request $request, $id)
+    {
+        $match = Game::findOrFail($id);
+        $stats = \App\Models\MatchStat::firstOrCreate(['match_id' => $id]);
+
+        $data = $request->validate([
+            'home_possession' => 'required|integer|min:0|max:100',
+            'home_shots' => 'required|integer|min:0',
+            'away_shots' => 'required|integer|min:0',
+            'home_shots_on_target' => 'required|integer|min:0',
+            'away_shots_on_target' => 'required|integer|min:0',
+            'home_corners' => 'required|integer|min:0',
+            'away_corners' => 'required|integer|min:0',
+            'home_fouls' => 'required|integer|min:0',
+            'away_fouls' => 'required|integer|min:0',
+            'home_yellow_cards' => 'required|integer|min:0',
+            'away_yellow_cards' => 'required|integer|min:0',
+            'home_red_cards' => 'required|integer|min:0',
+            'away_red_cards' => 'required|integer|min:0',
+            'home_offsides' => 'required|integer|min:0',
+            'away_offsides' => 'required|integer|min:0',
+        ]);
+
+        $data['away_possession'] = 100 - $data['home_possession'];
+
+        $stats->update($data);
+
+        return back()->with('success', 'Match statistics updated successfully!');
     }
 
     public function storeMatchEvent(Request $request, $id)
@@ -161,6 +198,33 @@ class AdminController extends Controller
         ]);
 
         return back()->with('success', 'Event added successfully!');
+    }
+
+    public function storeMatchLineup(Request $request, $id)
+    {
+        $request->validate([
+            'team_id' => 'required|exists:teams,id',
+            'player_id' => 'required|exists:players,id',
+            'is_starter' => 'boolean',
+            'position_name' => 'nullable|string'
+        ]);
+
+        \App\Models\MatchLineup::updateOrCreate(
+            ['match_id' => $id, 'player_id' => $request->player_id],
+            [
+                'team_id' => $request->team_id,
+                'is_starter' => $request->has('is_starter'),
+                'position_name' => $request->position_name
+            ]
+        );
+
+        return back()->with('success', 'Lineup updated successfully!');
+    }
+
+    public function deleteMatchLineup($id)
+    {
+        \App\Models\MatchLineup::findOrFail($id)->delete();
+        return back()->with('success', 'Player removed from lineup!');
     }
 
     public function deleteMatchEvent($id)

@@ -7,6 +7,9 @@ use App\Models\Game;
 use App\Models\MatchEvent;
 use App\Services\ScoreScraperService;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\MatchEventNotification;
+use App\Models\User;
+use App\Models\FavoriteTeam;
 
 class UpdateLiveScores extends Command
 {
@@ -68,6 +71,22 @@ class UpdateLiveScores extends Command
                     $updateData['match_time'] = 'FT';
                 }
 
+                // If match status changed to live, notify fans
+                if ($match->status === 'upcoming' && ($data['time'] == '0\'' || $data['time'] == '1\'' || (isset($data['time']) && intval($data['time']) > 0))) {
+                    $updateData['status'] = 'live';
+                    
+                    // Notify fans of both teams
+                    $fanIds = FavoriteTeam::whereIn('team_id', [$match->home_team_id, $match->away_team_id])
+                        ->whereNotNull('user_id')
+                        ->pluck('user_id')
+                        ->unique();
+                    
+                    $fans = User::findMany($fanIds);
+                    foreach ($fans as $fan) {
+                        $fan->notify(new MatchEventNotification($match, null, 'start'));
+                    }
+                }
+
                 $match->update($updateData);
 
                 // Update Goals / Match Events
@@ -84,7 +103,7 @@ class UpdateLiveScores extends Command
                             ->exists();
 
                         if (!$exists) {
-                            MatchEvent::create([
+                            $event = MatchEvent::create([
                                 'match_id' => $match->id,
                                 'team_id' => $teamId,
                                 'player_name' => $goal['player'],
@@ -92,6 +111,16 @@ class UpdateLiveScores extends Command
                                 'type' => 'goal'
                             ]);
                             $this->info("New Goal: {$goal['player']} ({$goal['minute']}')");
+
+                            // Notify fans of this team
+                            $fanIds = FavoriteTeam::where('team_id', $teamId)
+                                ->whereNotNull('user_id')
+                                ->pluck('user_id');
+                            
+                            $fans = User::findMany($fanIds);
+                            foreach ($fans as $fan) {
+                                $fan->notify(new MatchEventNotification($match, $event, 'goal'));
+                            }
                         }
                     }
                 }

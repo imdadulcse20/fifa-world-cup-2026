@@ -86,64 +86,312 @@
         </div>
     </div>
 
-    <!-- Timeline & Stadium -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <section class="space-y-6">
-            <h2 class="text-2xl font-black">Timeline</h2>
-            <div class="space-y-4 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
-                @forelse($match->matchEvents as $event)
-                    <div class="relative pl-8">
-                        <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white dark:bg-slate-900 border-2 border-primary-500 z-10 flex items-center justify-center">
-                            <span class="text-[10px] font-bold">{{ $event->minute }}'</span>
-                        </div>
-                        <div class="p-4 rounded-2xl glass dark:glass-dark border border-white/5">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="text-[10px] font-black uppercase text-primary-500 block mb-1">{{ $event->type }}</span>
-                                    <span class="font-bold">{{ $event->player_name ?: ($event->player ? $event->player->name : 'Goal') }}</span>
-                                    @if($event->details)
-                                        <p class="text-xs text-slate-500 mt-1">{{ $event->details }}</p>
+    <!-- AI Smart Prediction -->
+    @if($match->ai_prediction)
+    <div class="p-8 rounded-[3rem] bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-2xl relative overflow-hidden group">
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-primary-500/20 blur-[80px] rounded-full group-hover:bg-primary-500/30 transition-all duration-1000"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex items-center space-x-6">
+                <div class="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/40">
+                    <i data-lucide="brain-circuit" class="w-8 h-8 text-white"></i>
+                </div>
+                <div class="space-y-1">
+                    <h2 class="text-xl font-black uppercase tracking-tight">AI Smart Prediction</h2>
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Based on FIFA Rankings & Form</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-12">
+                <div class="flex flex-col items-center">
+                    <span class="text-3xl font-black text-primary-500">{{ $match->ai_prediction['home'] }}%</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest opacity-50">{{ $match->homeTeam->name ?? 'Home' }}</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="text-3xl font-black opacity-30">{{ $match->ai_prediction['draw'] }}%</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest opacity-50">Draw</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="text-3xl font-black text-slate-400">{{ $match->ai_prediction['away'] }}%</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest opacity-50">{{ $match->awayTeam->name ?? 'Away' }}</span>
+                </div>
+            </div>
+
+            <div class="bg-primary-500 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/20">
+                AI Verdict: {{ $match->ai_prediction['verdict'] }}
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Match Prediction Poll -->
+    <div class="bg-white dark:bg-slate-900 rounded-[3rem] p-10 border border-slate-100 dark:border-white/5 shadow-xl">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-black uppercase tracking-tight">Who will win?</h2>
+            <p class="text-slate-500 text-sm font-medium mt-1">Cast your vote and see what other fans think!</p>
+        </div>
+
+        @php
+            $totalVotes = $match->predictions->count();
+            $homeVotes = $match->predictions->where('choice', 'home')->count();
+            $drawVotes = $match->predictions->where('choice', 'draw')->count();
+            $awayVotes = $match->predictions->where('choice', 'away')->count();
+            
+            $homePercent = $totalVotes > 0 ? round(($homeVotes / $totalVotes) * 100) : 33;
+            $drawPercent = $totalVotes > 0 ? round(($drawVotes / $totalVotes) * 100) : 34;
+            $awayPercent = $totalVotes > 0 ? 100 - $homePercent - $drawPercent : 33;
+
+            $userPrediction = $match->predictions->where('session_id', session()->getId())->first();
+        @endphp
+
+        <div class="grid grid-cols-3 gap-4 md:gap-8">
+            <form action="{{ route('matches.predict', $match->id) }}" method="POST">
+                @csrf
+                <input type="hidden" name="choice" value="home">
+                <button type="submit" @if($match->status === 'finished') disabled @endif class="w-full group space-y-4">
+                    <div class="relative h-24 md:h-32 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 transition-all flex flex-col items-center justify-center overflow-hidden {{ $userPrediction && $userPrediction->choice === 'home' ? 'border-primary-500 bg-primary-500/5' : 'border-transparent hover:border-slate-200 dark:hover:border-slate-700' }}">
+                        <span class="text-3xl md:text-4xl font-black {{ $userPrediction ? 'text-slate-900 dark:text-white' : 'text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-colors' }}">
+                            {{ $homePercent }}%
+                        </span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">{{ $match->homeTeam->name ?? $match->home_team_placeholder }}</span>
+                        @if($userPrediction && $userPrediction->choice === 'home')
+                            <div class="absolute top-2 right-2 w-2 h-2 bg-primary-500 rounded-full"></div>
+                        @endif
+                    </div>
+                </button>
+            </form>
+
+            <form action="{{ route('matches.predict', $match->id) }}" method="POST">
+                @csrf
+                <input type="hidden" name="choice" value="draw">
+                <button type="submit" @if($match->status === 'finished') disabled @endif class="w-full group space-y-4">
+                    <div class="relative h-24 md:h-32 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 transition-all flex flex-col items-center justify-center overflow-hidden {{ $userPrediction && $userPrediction->choice === 'draw' ? 'border-primary-500 bg-primary-500/5' : 'border-transparent hover:border-slate-200 dark:hover:border-slate-700' }}">
+                        <span class="text-3xl md:text-4xl font-black {{ $userPrediction ? 'text-slate-900 dark:text-white' : 'text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-colors' }}">
+                            {{ $drawPercent }}%
+                        </span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Draw</span>
+                        @if($userPrediction && $userPrediction->choice === 'draw')
+                            <div class="absolute top-2 right-2 w-2 h-2 bg-primary-500 rounded-full"></div>
+                        @endif
+                    </div>
+                </button>
+            </form>
+
+            <form action="{{ route('matches.predict', $match->id) }}" method="POST">
+                @csrf
+                <input type="hidden" name="choice" value="away">
+                <button type="submit" @if($match->status === 'finished') disabled @endif class="w-full group space-y-4">
+                    <div class="relative h-24 md:h-32 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 transition-all flex flex-col items-center justify-center overflow-hidden {{ $userPrediction && $userPrediction->choice === 'away' ? 'border-primary-500 bg-primary-500/5' : 'border-transparent hover:border-slate-200 dark:hover:border-slate-700' }}">
+                        <span class="text-3xl md:text-4xl font-black {{ $userPrediction ? 'text-slate-900 dark:text-white' : 'text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-colors' }}">
+                            {{ $awayPercent }}%
+                        </span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">{{ $match->awayTeam->name ?? $match->away_team_placeholder }}</span>
+                        @if($userPrediction && $userPrediction->choice === 'away')
+                            <div class="absolute top-2 right-2 w-2 h-2 bg-primary-500 rounded-full"></div>
+                        @endif
+                    </div>
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-8 flex justify-center items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+            <i data-lucide="users" class="w-3 h-3"></i>
+            <span>{{ number_format($totalVotes) }} FANS HAVE VOTED</span>
+        </div>
+    </div>
+
+    <!-- Match Details Tabs -->
+    <div x-data="{ activeTab: 'timeline' }" class="space-y-8">
+        <!-- Tab Navigation -->
+        <div class="flex p-1 bg-white/5 rounded-3xl w-full md:w-fit mx-auto border border-white/10 glass dark:glass-dark">
+            <button 
+                @click="activeTab = 'timeline'" 
+                :class="{ 'bg-primary-500 text-white shadow-xl shadow-primary-500/20': activeTab === 'timeline', 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300': activeTab !== 'timeline' }"
+                class="flex-1 md:flex-none px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+            >
+                Timeline
+            </button>
+            <button 
+                @click="activeTab = 'lineups'" 
+                :class="{ 'bg-primary-500 text-white shadow-xl shadow-primary-500/20': activeTab === 'lineups', 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300': activeTab !== 'lineups' }"
+                class="flex-1 md:flex-none px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+            >
+                Lineups
+            </button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <!-- Left Column: Primary Tab Content -->
+            <div class="md:col-span-8">
+                <!-- Timeline Tab -->
+                <div x-show="activeTab === 'timeline'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
+                    <h2 class="text-2xl font-black">Match Timeline</h2>
+                    <div class="space-y-4 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
+                        @forelse($match->matchEvents->sortBy('minute') as $event)
+                            <div class="relative pl-8">
+                                <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white dark:bg-slate-900 border-2 border-primary-500 z-10 flex items-center justify-center">
+                                    <span class="text-[10px] font-bold">{{ $event->minute }}'</span>
+                                </div>
+                                <div class="p-6 rounded-3xl glass dark:glass-dark border border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                            @if($event->type === 'goal')
+                                                <i data-lucide="goal" class="w-5 h-5 text-primary-500"></i>
+                                            @elseif($event->type === 'yellow_card')
+                                                <div class="w-3.5 h-5 bg-yellow-400 rounded-sm shadow-sm"></div>
+                                            @elseif($event->type === 'red_card')
+                                                <div class="w-3.5 h-5 bg-red-500 rounded-sm shadow-sm"></div>
+                                            @else
+                                                <i data-lucide="repeat" class="w-5 h-5 text-slate-400"></i>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <span class="text-[10px] font-black uppercase text-primary-500 block mb-0.5">{{ str_replace('_', ' ', $event->type) }}</span>
+                                            <span class="font-black text-lg">{{ $event->player_name ?: ($event->player ? $event->player->name : 'Goal') }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ $event->team->name }}</span>
+                                        @if($event->team->flag_url)
+                                            <img src="{{ asset($event->team->flag_url) }}" class="w-6 h-4 object-cover rounded-sm" alt="">
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="p-12 rounded-[3rem] glass dark:glass-dark text-center space-y-4">
+                                <i data-lucide="info" class="w-12 h-12 text-slate-300 mx-auto"></i>
+                                <p class="text-slate-500 font-bold italic text-lg">Waiting for match action...</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Lineups Tab -->
+                <div x-show="activeTab === 'lineups'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-8">
+                    <h2 class="text-2xl font-black">Official Lineups</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        @foreach([['team' => $match->homeTeam, 'placeholder' => $match->home_team_placeholder], ['team' => $match->awayTeam, 'placeholder' => $match->away_team_placeholder]] as $side)
+                            <div class="space-y-6">
+                                <div class="flex items-center space-x-4 mb-6">
+                                    @if($side['team'])
+                                        <img src="{{ asset($side['team']->flag_url) }}" class="w-12 h-8 object-cover rounded-lg shadow-lg" alt="">
+                                        <h3 class="font-black text-xl uppercase tracking-tighter">{{ $side['team']->name }}</h3>
+                                    @else
+                                        <div class="w-12 h-8 bg-slate-200 dark:bg-slate-800 rounded-lg flex items-center justify-center">
+                                            <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
+                                        </div>
+                                        <h3 class="font-black text-xl text-slate-400 uppercase tracking-tighter">{{ $side['placeholder'] }}</h3>
                                     @endif
                                 </div>
-                                <span class="text-xs font-medium text-slate-400">{{ $event->team->name ?? 'Match Event' }}</span>
+
+                                <!-- Starters -->
+                                <div class="space-y-3">
+                                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 mb-4">Starting XI</h4>
+                                    @php
+                                        $starters = $side['team'] ? $match->lineups->where('team_id', $side['team']->id)->where('is_starter', true) : collect();
+                                    @endphp
+                                    @forelse($starters as $lineup)
+                                        <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
+                                            <div class="flex items-center space-x-4">
+                                                <span class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-black text-slate-500">
+                                                    {{ $lineup->player->number ?? '—' }}
+                                                </span>
+                                                <div class="flex flex-col">
+                                                    <span class="font-bold text-sm">{{ $lineup->player->name }}</span>
+                                                    <span class="text-[9px] font-black uppercase text-slate-400">{{ $lineup->position_name ?: $lineup->player->position }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <p class="text-xs text-slate-500 italic p-4">Starting XI not announced yet.</p>
+                                    @endforelse
+                                </div>
+
+                                <!-- Subs -->
+                                <div class="space-y-3">
+                                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Substitutes</h4>
+                                    @php
+                                        $subs = $side['team'] ? $match->lineups->where('team_id', $side['team']->id)->where('is_starter', false) : collect();
+                                    @endphp
+                                    @forelse($subs as $lineup)
+                                        <div class="flex items-center justify-between p-3 opacity-70">
+                                            <div class="flex items-center space-x-4">
+                                                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400">
+                                                    {{ $lineup->player->number ?? '—' }}
+                                                </span>
+                                                <span class="font-bold text-xs">{{ $lineup->player->name }}</span>
+                                            </div>
+                                            <span class="text-[8px] font-black uppercase text-slate-400">{{ $lineup->position_name ?: $lineup->player->position }}</span>
+                                        </div>
+                                    @empty
+                                        <p class="text-xs text-slate-400 italic px-4">No substitutes listed.</p>
+                                    @endforelse
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                </div>
+            </div>
+
+            <!-- Right Column: Stadium & Info -->
+            <div class="md:col-span-4 space-y-8">
+                <section class="space-y-6">
+                    <h2 class="text-2xl font-black">Venue Info</h2>
+                    <div class="rounded-[3rem] overflow-hidden glass dark:glass-dark border border-white/10 group shadow-2xl">
+                        <div class="relative h-64 overflow-hidden">
+                            <img src="{{ $match->stadium->image_url }}" alt="{{ $match->stadium->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                            <div class="absolute bottom-8 left-8 right-8">
+                                <h3 class="text-white font-black text-2xl leading-tight mb-2">{{ $match->stadium->name }}</h3>
+                                <div class="flex items-center text-white/70 text-sm">
+                                    <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
+                                    <span>{{ $match->stadium->city }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em] mb-1">Capacity</span>
+                                    <div class="flex items-center text-primary-500">
+                                        <i data-lucide="users" class="w-4 h-4 mr-2"></i>
+                                        <span class="font-black text-xl">{{ number_format($match->stadium->capacity) }}</span>
+                                    </div>
+                                </div>
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($match->stadium->name . ' ' . $match->stadium->city) }}" target="_blank" class="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl text-slate-600 dark:text-slate-300 hover:text-primary-500 transition-colors shadow-sm">
+                                    <i data-lucide="external-link" class="w-5 h-5"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
-                @empty
-                    <div class="p-8 rounded-3xl glass dark:glass-dark text-center text-slate-500 italic">
-                        No match events recorded yet.
-                    </div>
-                @endforelse
-            </div>
-        </section>
+                </section>
 
-        <section class="space-y-6">
-            <h2 class="text-2xl font-black">Stadium Info</h2>
-            <div class="rounded-[2.5rem] overflow-hidden glass dark:glass-dark border border-white/10 group shadow-xl">
-                <div class="relative h-48 overflow-hidden">
-                    <img src="{{ $match->stadium->image_url }}" alt="{{ $match->stadium->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                    <div class="absolute bottom-4 left-6">
-                        <h3 class="text-white font-black text-xl leading-tight">{{ $match->stadium->name }}</h3>
-                        <div class="flex items-center text-white/80 text-xs mt-1">
-                            <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i>
-                            <span>{{ $match->stadium->city }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center justify-between">
+                <!-- Weather/Conditions (Mock) -->
+                <div class="p-8 rounded-[2.5rem] bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-xl shadow-primary-500/20">
+                    <div class="flex justify-between items-start mb-6">
                         <div class="flex flex-col">
-                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Capacity</span>
-                            <span class="font-bold mt-1">{{ number_format($match->stadium->capacity) }} fans</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest opacity-70">Conditions</span>
+                            <span class="text-2xl font-black">Partly Cloudy</span>
                         </div>
-                        <button class="px-6 py-2 bg-primary-500 text-white rounded-full text-[10px] font-bold shadow-lg shadow-primary-500/30">
-                            VIEW MAP
-                        </button>
+                        <i data-lucide="cloud-sun" class="w-8 h-8"></i>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 rounded-2xl p-4">
+                            <span class="text-[10px] font-black uppercase tracking-widest opacity-70 block mb-1">Temp</span>
+                            <span class="text-lg font-black">24°C</span>
+                        </div>
+                        <div class="bg-white/10 rounded-2xl p-4">
+                            <span class="text-[10px] font-black uppercase tracking-widest opacity-70 block mb-1">Humidity</span>
+                            <span class="text-lg font-black">45%</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
     <!-- Page Description -->
     @include('layouts.page-description', [

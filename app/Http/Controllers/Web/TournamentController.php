@@ -106,7 +106,7 @@ class TournamentController extends Controller
             abort(404);
         }
 
-        $match = Game::with(['homeTeam', 'awayTeam', 'stadium', 'matchEvents.player', 'matchEvents.team'])->findOrFail($id);
+        $match = Game::with(['homeTeam', 'awayTeam', 'stadium', 'matchEvents.player', 'matchEvents.team', 'stats', 'lineups.player', 'predictions'])->findOrFail($id);
 
         // Canonical redirect if slug is wrong
         if ($slug !== $match->slug) {
@@ -147,7 +147,20 @@ class TournamentController extends Controller
     public function teams()
     {
         $teams = Team::all()->groupBy('group_name')->sortKeys();
-        return view('teams', compact('teams'));
+        
+        $sessionId = session()->getId();
+        $userId = auth()->id();
+        
+        $favorites = \App\Models\FavoriteTeam::query();
+        if ($userId) {
+            $favorites->where('user_id', $userId);
+        } else {
+            $favorites->where('session_id', $sessionId);
+        }
+        
+        $favoriteTeamIds = $favorites->pluck('team_id')->toArray();
+        
+        return view('teams', compact('teams', 'favoriteTeamIds'));
     }
 
     public function teamDetails($id)
@@ -159,7 +172,19 @@ class TournamentController extends Controller
             ->orderBy('match_date_utc', 'asc')
             ->get();
 
-        return view('team-details', compact('team', 'matches'));
+        $sessionId = session()->getId();
+        $userId = auth()->id();
+        
+        $isFavorited = \App\Models\FavoriteTeam::where('team_id', $id)
+            ->where(function($q) use ($userId, $sessionId) {
+                if ($userId) {
+                    $q->where('user_id', $userId);
+                } else {
+                    $q->where('session_id', $sessionId);
+                }
+            })->exists();
+
+        return view('team-details', compact('team', 'matches', 'isFavorited'));
     }
 
     public function stadiums()
@@ -195,6 +220,113 @@ class TournamentController extends Controller
     public function contact()
     {
         return view('contact');
+    }
+
+    public function search(Request $request)
+    {
+        $q = $request->input('q');
+        
+        if (empty($q)) {
+            return view('search', ['results' => null, 'q' => $q]);
+        }
+
+        $teams = Team::where('name', 'LIKE', "%{$q}%")->get();
+        
+        $matches = Game::with(['homeTeam', 'awayTeam', 'stadium'])
+            ->where(function($query) use ($q) {
+                $query->whereHas('homeTeam', function($sq) use ($q) {
+                        $sq->where('name', 'LIKE', "%{$q}%");
+                    })
+                    ->orWhereHas('awayTeam', function($sq) use ($q) {
+                        $sq->where('name', 'LIKE', "%{$q}%");
+                    })
+                    ->orWhere('stage', 'LIKE', "%{$q}%")
+                    ->orWhere('group_name', 'LIKE', "%{$q}%")
+                    ->orWhereHas('stadium', function($sq) use ($q) {
+                        $sq->where('name', 'LIKE', "%{$q}%")->orWhere('city', 'LIKE', "%{$q}%");
+                    });
+            })
+            ->get();
+
+        $players = \App\Models\Player::with('team')
+            ->where('name', 'LIKE', "%{$q}%")
+            ->get();
+
+        $results = [
+            'teams' => $teams,
+            'matches' => $matches,
+            'players' => $players
+        ];
+
+        return view('search', compact('results', 'q'));
+    }
+
+    public function predict(Request $request, $id)
+    {
+        $request->validate([
+            'choice' => 'required|in:home,draw,away'
+        ]);
+
+        $sessionId = session()->getId();
+
+        \App\Models\Prediction::updateOrCreate(
+            ['match_id' => $id, 'session_id' => $sessionId],
+            ['choice' => $request->choice]
+        );
+
+        return back()->with('success', 'Thank you for your prediction!');
+    }
+
+    public function toggleFavorite(Request $request, $teamId)
+    {
+        $sessionId = session()->getId();
+        $userId = auth()->id();
+
+        $query = \App\Models\FavoriteTeam::where('team_id', $teamId);
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        } else {
+            $query->where('session_id', $sessionId);
+        }
+
+        $favorite = $query->first();
+
+        if ($favorite) {
+            $favorite->delete();
+            $status = 'removed';
+        } else {
+            \App\Models\FavoriteTeam::create([
+                'team_id' => $teamId,
+                'user_id' => $userId,
+                'session_id' => $userId ? null : $sessionId,
+            ]);
+            $status = 'added';
+        }
+
+        if ($request->ajax()) {
+            return response()->json(['status' => $status]);
+        }
+
+        return back()->with('success', "Team " . ($status === 'added' ? 'added to' : 'removed from') . " favorites!");
+    }
+
+    public function notifications()
+    {
+        if (!auth()->check()) {
+            return response()->json([]);
+        }
+
+        $notifications = auth()->user()->unreadNotifications;
+        return response()->json($notifications);
+    }
+
+    public function markNotificationsRead()
+    {
+        if (auth()->check()) {
+            auth()->user()->unreadNotifications->markAsRead();
+        }
+        return response()->json(['status' => 'success']);
     }
 
     public function about()

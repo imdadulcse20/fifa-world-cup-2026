@@ -1,0 +1,20 @@
+{
+    "name": "2026 World Cup Fan App",
+    "short_name": "FWC 2026",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0ea5e9",
+    "theme_color": "#0ea5e9",
+    "icons": [
+        {
+            "src": "/images/logo.jpeg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "/images/logo.jpeg",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
+}

@@ -88,6 +88,42 @@ class Game extends Model
         );
     }
 
+    public function getAiPredictionAttribute()
+    {
+        if (!$this->homeTeam || !$this->awayTeam) return null;
+
+        $homeRank = $this->homeTeam->fifa_rank;
+        $awayRank = $this->awayTeam->fifa_rank;
+
+        // Base probability calculation based on ranking (lower rank is better)
+        $totalRank = $homeRank + $awayRank;
+        $homeProb = 1 - ($homeRank / $totalRank);
+        $awayProb = 1 - ($awayRank / $totalRank);
+
+        // Normalize
+        $sum = $homeProb + $awayProb;
+        $homeProb = ($homeProb / $sum) * 100;
+        $awayProb = ($awayProb / $sum) * 100;
+
+        // Home advantage boost
+        $homeProb += 5;
+        $awayProb -= 5;
+
+        // Draw probability based on rank closeness
+        $rankDiff = abs($homeRank - $awayRank);
+        $drawProb = max(10, 30 - ($rankDiff * 0.5));
+
+        // Re-normalize to 100%
+        $total = $homeProb + $awayProb + $drawProb;
+        
+        return [
+            'home' => round(($homeProb / $total) * 100),
+            'away' => round(($awayProb / $total) * 100),
+            'draw' => round(($drawProb / $total) * 100),
+            'verdict' => ($homeRank < $awayRank) ? $this->homeTeam->name : $this->awayTeam->name
+        ];
+    }
+
     public function getSlugAttribute()
     {
         $home = $this->homeTeam ? $this->homeTeam->name : ($this->home_team_placeholder ?: 'TBA');
@@ -135,5 +171,20 @@ class Game extends Model
     public function matchEvents()
     {
         return $this->hasMany(MatchEvent::class, 'match_id');
+    }
+
+    public function stats()
+    {
+        return $this->hasOne(MatchStat::class, 'match_id');
+    }
+
+    public function lineups()
+    {
+        return $this->hasMany(MatchLineup::class, 'match_id');
+    }
+
+    public function predictions()
+    {
+        return $this->hasMany(Prediction::class, 'match_id');
     }
 }

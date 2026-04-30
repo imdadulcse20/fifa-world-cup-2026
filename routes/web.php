@@ -23,6 +23,11 @@ Route::get('/settings', [TournamentController::class, 'settings'])->name('settin
 Route::get('/privacy-policy', [TournamentController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::get('/terms-conditions', [TournamentController::class, 'termsConditions'])->name('terms-conditions');
 Route::get('/contact', [TournamentController::class, 'contact'])->name('contact');
+Route::get('/search', [TournamentController::class, 'search'])->name('search');
+Route::post('/teams/{id}/favorite', [TournamentController::class, 'toggleFavorite'])->name('teams.favorite');
+Route::get('/api/notifications', [TournamentController::class, 'notifications']);
+Route::post('/api/notifications/read', [TournamentController::class, 'markNotificationsRead']);
+Route::post('/matches/{id}/predict', [TournamentController::class, 'predict'])->name('matches.predict');
 Route::get('/about', [TournamentController::class, 'about'])->name('about');
 
 // Admin Auth
@@ -47,6 +52,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,faq_mana
         Route::post('/matches/{id}', [App\Http\Controllers\Admin\AdminController::class, 'updateMatch'])->name('matches.update');
         Route::get('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'matchEvents'])->name('matches.events');
         Route::post('/matches/{id}/events', [App\Http\Controllers\Admin\AdminController::class, 'storeMatchEvent'])->name('matches.events.store');
+        Route::post('/matches/{id}/stats', [App\Http\Controllers\Admin\AdminController::class, 'updateMatchStats'])->name('matches.stats.update');
+        Route::post('/matches/{id}/lineups', [App\Http\Controllers\Admin\AdminController::class, 'storeMatchLineup'])->name('matches.lineups.store');
+        Route::delete('/lineups/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteMatchLineup'])->name('matches.lineups.delete');
         Route::delete('/events/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteMatchEvent'])->name('matches.events.delete');
         
         Route::get('/standings', [App\Http\Controllers\Admin\AdminController::class, 'standings'])->name('standings');
