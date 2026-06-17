@@ -50,6 +50,7 @@ class Game extends Model
         if (!$team) return;
 
         $matches = static::where('status', 'finished')
+            ->where('match_type', 'tournament')
             ->where(function ($q) use ($teamId) {
                 $q->where('home_team_id', $teamId)->orWhere('away_team_id', $teamId);
             })->get();

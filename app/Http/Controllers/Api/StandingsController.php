@@ -16,25 +16,34 @@ class StandingsController extends Controller
             $thirdPlacedTeams = collect();
 
             foreach ($allStandings as $groupName => $groupTeams) {
-                $sorted = $groupTeams->sortByDesc('points')
-                    ->sortByDesc('goal_difference')
-                    ->sortByDesc('goals_for')
-                    ->values();
+                $sorted = $groupTeams->sort(function($a, $b) {
+                    if ($a->points != $b->points) return $b->points <=> $a->points;
+                    if ($a->goal_difference != $b->goal_difference) return $b->goal_difference <=> $a->goal_difference;
+                    if ($a->goals_for != $b->goals_for) return $b->goals_for <=> $a->goals_for;
+                    return ($a->team->fifa_rank ?? 999) <=> ($b->team->fifa_rank ?? 999);
+                })->values();
                 
                 if ($sorted->count() >= 3) {
                     $thirdPlacedTeams->push($sorted[2]);
                 }
             }
 
-            $thirdPlacedRankings = $thirdPlacedTeams->sortByDesc('points')
-                ->sortByDesc('goal_difference')
-                ->sortByDesc('goals_for')
-                ->values();
+            $thirdPlacedRankings = $thirdPlacedTeams->sort(function($a, $b) {
+                if ($a->points != $b->points) return $b->points <=> $a->points;
+                if ($a->goal_difference != $b->goal_difference) return $b->goal_difference <=> $a->goal_difference;
+                if ($a->goals_for != $b->goals_for) return $b->goals_for <=> $a->goals_for;
+                return ($a->team->fifa_rank ?? 999) <=> ($b->team->fifa_rank ?? 999);
+            })->values();
 
             $formattedStandings = $allStandings->map(function($group, $key) {
                 return [
                     'group_name' => $key,
-                    'teams' => $group->sortByDesc('points')->sortByDesc('goal_difference')->values()
+                    'teams' => $group->sort(function($a, $b) {
+                        if ($a->points != $b->points) return $b->points <=> $a->points;
+                        if ($a->goal_difference != $b->goal_difference) return $b->goal_difference <=> $a->goal_difference;
+                        if ($a->goals_for != $b->goals_for) return $b->goals_for <=> $a->goals_for;
+                        return ($a->team->fifa_rank ?? 999) <=> ($b->team->fifa_rank ?? 999);
+                    })->values()
                 ];
             })->values();
 

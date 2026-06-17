@@ -288,8 +288,8 @@
                                 <div class="flex items-center space-x-3">
                                     <span class="font-black text-primary-500 text-sm">{{ $event->minute }}'</span>
                                     <div class="flex flex-col">
-                                        <span class="font-bold text-sm">{{ $event->player->name }}</span>
-                                        <span class="text-[10px] uppercase font-black text-slate-400 tracking-widest">{{ $event->team->name }}</span>
+                                        <span class="font-bold text-sm">{{ $event->player_name ?: ($event->player->name ?? 'Goal') }}</span>
+                                        <span class="text-[10px] uppercase font-black text-slate-400 tracking-widest">{{ $event->team->name ?? 'Unknown Team' }}</span>
                                     </div>
                                 </div>
                                 <form action="{{ route('admin.matches.events.delete', $event->id) }}" method="POST">

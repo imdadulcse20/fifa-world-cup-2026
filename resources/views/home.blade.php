@@ -79,14 +79,27 @@
                         </div>
 
                         <!-- Goal Scorers Section -->
-                        <div class="border-t border-slate-100 dark:border-slate-800 pt-4 goal-scorers-list space-y-1">
-                            @foreach($match->matchEvents->where('type', 'goal')->sortBy('minute') as $event)
-                                <div class="flex items-center justify-center space-x-2 text-[10px] text-slate-500">
-                                    <i data-lucide="goal" class="w-3 h-3 text-primary-500"></i>
-                                    <span class="font-bold">{{ $event->player_name ?: ($event->player ? $event->player->name : 'Goal') }}</span>
-                                    <span class="text-slate-400 font-medium">{{ $event->minute }}'</span>
-                                </div>
-                            @endforeach
+                        <div class="border-t border-slate-100 dark:border-slate-800 pt-4 grid grid-cols-2 gap-4">
+                            <!-- Home Scorers -->
+                            <div class="goal-scorers-home space-y-1">
+                                @foreach($match->matchEvents->where('type', 'goal')->where('team_id', $match->home_team_id)->sortBy('minute') as $event)
+                                    <div class="flex items-center space-x-2 text-[9px] text-slate-500">
+                                        <i data-lucide="goal" class="w-2.5 h-2.5 text-primary-500"></i>
+                                        <span class="font-bold truncate">{{ $event->player_name ?: ($event->player ? $event->player->name : 'Goal') }}</span>
+                                        <span class="text-slate-400 font-medium">{{ $event->minute }}'</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <!-- Away Scorers -->
+                            <div class="goal-scorers-away space-y-1 text-right">
+                                @foreach($match->matchEvents->where('type', 'goal')->where('team_id', $match->away_team_id)->sortBy('minute') as $event)
+                                    <div class="flex items-center justify-end space-x-2 text-[9px] text-slate-500">
+                                        <span class="text-slate-400 font-medium">{{ $event->minute }}'</span>
+                                        <span class="font-bold truncate">{{ $event->player_name ?: ($event->player ? $event->player->name : 'Goal') }}</span>
+                                        <i data-lucide="goal" class="w-2.5 h-2.5 text-primary-500"></i>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -144,6 +157,7 @@
         <div x-show="tab === 'tournament'" x-transition class="space-y-4">
             @forelse($upcomingTournamentMatches as $match)
                 <div class="flex items-center justify-between p-4 rounded-3xl glass dark:glass-dark border border-white/5 cursor-pointer hover:border-primary-500/30 transition-all"
+                     data-match-id="{{ $match->id }}" data-live="false"
                      onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">
                     <div class="flex items-center space-x-4 flex-1">
                         @if($match->homeTeam)
@@ -192,6 +206,7 @@
         <div x-show="tab === 'friendly'" x-transition class="space-y-4">
             @forelse($upcomingFriendlyMatches as $match)
                 <div class="flex items-center justify-between p-4 rounded-3xl glass dark:glass-dark border border-white/5 cursor-pointer hover:border-primary-500/30 transition-all"
+                     data-match-id="{{ $match->id }}" data-live="false"
                      onclick="window.location='{{ route('match-details', ['slug_id' => $match->slug . '-' . $match->id]) }}'">
                     <div class="flex items-center space-x-4 flex-1">
                         @if($match->homeTeam)

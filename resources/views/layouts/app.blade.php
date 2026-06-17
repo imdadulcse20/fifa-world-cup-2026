@@ -365,7 +365,9 @@
             // Live Score Auto Update
             function updateLiveScores() {
                 const liveElements = document.querySelectorAll('[data-live="true"]');
-                if (liveElements.length === 0) return;
+                // Even if no live elements, we check if any upcoming matches started
+                const matchContainer = document.querySelector('[data-match-id]');
+                if (!matchContainer && liveElements.length === 0) return;
 
                 fetch('/api/matches?status=live')
                     .then(response => response.json())
@@ -373,13 +375,22 @@
                         const matches = json.data;
                         if (!matches) return;
 
-                        // If a match is no longer live, refresh to move it to finished section
+                        // Check for status changes (e.g. upcoming -> live or live -> finished)
                         const activeIds = matches.map(m => m.id.toString());
                         let needsRefresh = false;
                         
+                        // Check if any match that was live is now finished
                         liveElements.forEach(el => {
                             const id = el.getAttribute('data-match-id');
                             if (!activeIds.includes(id)) {
+                                needsRefresh = true;
+                            }
+                        });
+
+                        // Check if any match that is currently live is not marked as live in UI
+                        matches.forEach(match => {
+                            const el = document.querySelector(`[data-match-id="${match.id}"]`);
+                            if (el && el.getAttribute('data-live') !== 'true') {
                                 needsRefresh = true;
                             }
                         });
@@ -415,23 +426,44 @@
                                     timeEl.textContent = match.match_time;
                                 }
 
-                                // Update Goal Scorers
-                                const scorersContainer = el.querySelector('.goal-scorers-list');
-                                if (scorersContainer && match.match_events) {
-                                    const goalEvents = match.match_events
-                                        .filter(e => e.type === 'goal')
-                                        .sort((a, b) => a.minute - b.minute);
+                                // Update Goal Scorers (Home/Schedule list)
+                                const homeScorersContainer = el.querySelector('.goal-scorers-home');
+                                const awayScorersContainer = el.querySelector('.goal-scorers-away');
+                                
+                                if (homeScorersContainer && awayScorersContainer && match.match_events) {
+                                    const homeGoals = match.match_events.filter(e => e.type === 'goal' && e.team_id == match.home_team_id);
+                                    const awayGoals = match.match_events.filter(e => e.type === 'goal' && e.team_id == match.away_team_id);
                                     
-                                    // Only update if count changed
-                                    if (scorersContainer.children.length !== goalEvents.length) {
-                                        scorersContainer.innerHTML = goalEvents.map(event => `
-                                            <div class="flex items-center justify-center space-x-2 text-[10px] text-slate-500">
-                                                <i data-lucide="goal" class="w-3 h-3 text-primary-500"></i>
-                                                <span class="font-bold">${event.player_name || (event.player ? event.player.name : 'Goal')}</span>
+                                    // Update Home Scorers
+                                    if (homeScorersContainer.children.length !== homeGoals.length) {
+                                        homeScorersContainer.innerHTML = homeGoals.sort((a, b) => a.minute - b.minute).map(event => `
+                                            <div class="flex items-center space-x-2 text-[9px] text-slate-500">
+                                                <i data-lucide="goal" class="w-2.5 h-2.5 text-primary-500"></i>
+                                                <span class="font-bold truncate">${event.player_name || (event.player ? event.player.name : 'Goal')}</span>
                                                 <span class="text-slate-400 font-medium">${event.minute}'</span>
                                             </div>
                                         `).join('');
-                                        if (window.lucide) window.lucide.createIcons();
+                                    }
+                                    
+                                    // Update Away Scorers
+                                    if (awayScorersContainer.children.length !== awayGoals.length) {
+                                        awayScorersContainer.innerHTML = awayGoals.sort((a, b) => a.minute - b.minute).map(event => `
+                                            <div class="flex items-center justify-end space-x-2 text-[9px] text-slate-500">
+                                                <span class="text-slate-400 font-medium">${event.minute}'</span>
+                                                <span class="font-bold truncate">${event.player_name || (event.player ? event.player.name : 'Goal')}</span>
+                                                <i data-lucide="goal" class="w-2.5 h-2.5 text-primary-500"></i>
+                                            </div>
+                                        `).join('');
+                                    }
+                                    
+                                    if (window.lucide) window.lucide.createIcons();
+                                }
+
+                                // Update Timeline/Details (if on match details page)
+                                const timelineContainer = document.getElementById('match-timeline-container');
+                                if (timelineContainer && match.match_events) {
+                                    if (timelineContainer.getAttribute('data-event-count') != match.match_events.length) {
+                                        window.location.reload();
                                     }
                                 }
                             }
@@ -440,9 +472,9 @@
                     .catch(err => console.error('Error fetching live scores:', err));
             }
 
-            // Poll every 1 minute
-            if (document.querySelectorAll('[data-live="true"]').length > 0) {
-                setInterval(updateLiveScores, 60000);
+            // Poll every 30 seconds if there are match elements on the page
+            if (document.querySelectorAll('[data-match-id]').length > 0) {
+                setInterval(updateLiveScores, 30000);
             }
         });
 

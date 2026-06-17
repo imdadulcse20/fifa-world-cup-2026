@@ -32,7 +32,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
-                            @foreach($groupTeams->sortByDesc('points')->sortByDesc('goal_difference')->sortByDesc('goals_for') as $index => $standing)
+                            @foreach($groupTeams as $index => $standing)
                                 <tr class="hover:bg-white/5 transition-colors {{ $index < 2 ? 'bg-primary-500/5' : '' }}">
                                     <td class="px-6 py-4 flex items-center space-x-3">
                                         <span class="text-xs font-bold text-slate-500 w-4">{{ $index + 1 }}</span>

@@ -13,7 +13,8 @@
     </a>
 
     <!-- Scoreboard -->
-    <div class="p-10 rounded-[3rem] glass dark:glass-dark border border-white/20 shadow-2xl overflow-hidden relative">
+    <div class="p-10 rounded-[3rem] glass dark:glass-dark border border-white/20 shadow-2xl overflow-hidden relative"
+         data-match-id="{{ $match->id }}" data-live="{{ $match->status === 'live' ? 'true' : 'false' }}">
         <div class="flex justify-between items-center mb-8">
             <span class="text-xs font-black uppercase tracking-widest text-primary-500">{{ $match->stage }} • {{ $match->group_name }}</span>
             @if($match->status === 'live')
@@ -227,7 +228,7 @@
                 <!-- Timeline Tab -->
                 <div x-show="activeTab === 'timeline'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
                     <h2 class="text-2xl font-black">Match Timeline</h2>
-                    <div class="space-y-4 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
+                    <div id="match-timeline-container" data-event-count="{{ $match->matchEvents->count() }}" class="space-y-4 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
                         @forelse($match->matchEvents->sortBy('minute') as $event)
                             <div class="relative pl-8">
                                 <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white dark:bg-slate-900 border-2 border-primary-500 z-10 flex items-center justify-center">

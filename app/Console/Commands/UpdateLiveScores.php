@@ -18,7 +18,7 @@ class UpdateLiveScores extends Command
      *
      * @var string
      */
-    protected $signature = 'scores:update';
+    protected $signature = 'scores:update {--sleep=0}';
 
     /**
      * The console command description.
@@ -42,9 +42,15 @@ class UpdateLiveScores extends Command
      */
     public function handle()
     {
-        // Select matches that are live OR have scraping active
+        $sleep = (int) $this->option('sleep');
+        if ($sleep > 0) {
+            $this->info("Sleeping for {$sleep} seconds...");
+            sleep($sleep);
+        }
+
+        // Select matches that are live OR upcoming with active scraping
         $matches = Game::where('is_scraping_active', true)
-            ->where('status', 'live')
+            ->whereIn('status', ['live', 'upcoming'])
             ->whereNotNull('scraping_url')
             ->get();
 
@@ -88,6 +94,7 @@ class UpdateLiveScores extends Command
                 }
 
                 $match->update($updateData);
+                Log::info("Match ID {$match->id} updated via scheduler: {$data['home']}-{$data['away']} ({$updateData['match_time']})");
 
                 // Update Goals / Match Events
                 $this->info("Goals found by scraper: " . count($data['goals'] ?? []));

@@ -15,7 +15,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('scores:update')->everyMinute();
+        // Run scraper every 30 seconds
+        $schedule->command('scores:update')->everyMinute()->runInBackground();
+        $schedule->command('scores:update --sleep=30')->everyMinute()->runInBackground();
     }
 
     /**
